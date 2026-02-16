@@ -9,9 +9,9 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     envVars:
-      # Database Connection (Supabase PostgreSQL)
+      # Database Connection (Supabase PostgreSQL - Transaction mode for connection pooling)
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require
+        value: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
       - key: SPRING_DATASOURCE_USERNAME
         value: postgres.xuymovkqpwqjfuicykan
       - key: SPRING_DATASOURCE_PASSWORD
