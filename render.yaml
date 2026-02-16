@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: semester-reading-group
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/admin/groups
+    autoDeploy: true
+    envVars:
+      # Database Connection (Supabase PostgreSQL)
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres.xuymovkqpwqjfuicykan
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false  # Set this manually in Render dashboard for security
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
+
+      # JPA/Hibernate Configuration
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.PostgreSQLDialect
+      - key: SPRING_JPA_SHOW_SQL
+        value: false
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+        value: false
+
+      # Spring Session JDBC (fixes "spring_session does not exist" error)
+      - key: SPRING_SESSION_STORE_TYPE
+        value: jdbc
+      - key: SPRING_SESSION_JDBC_INITIALIZE_SCHEMA
+        value: always
+
+      # JWT Configuration
+      - key: JWT_SECRET
+        sync: false  # Set this manually in Render dashboard for security
+      - key: JWT_EXPIRATION
+        value: 86400000
+
+      # Application Configuration
+      - key: SPRING_APPLICATION_NAME
+        value: semester-reading-group
+
+      # Server Configuration (Render uses PORT env var)
+      - key: SERVER_PORT
+        value: 8080
