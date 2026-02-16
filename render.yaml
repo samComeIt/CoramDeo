@@ -11,7 +11,7 @@ services:
     envVars:
       # Database Connection (Supabase PostgreSQL - Transaction mode for connection pooling)
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
+        value: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preparedStatementCacheQueries=0
       - key: SPRING_DATASOURCE_USERNAME
         value: postgres.xuymovkqpwqjfuicykan
       - key: SPRING_DATASOURCE_PASSWORD
@@ -27,6 +27,12 @@ services:
       - key: SPRING_JPA_SHOW_SQL
         value: false
       - key: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+        value: false
+
+      # Fix for Supabase Transaction pooler
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_USE_GET_GENERATED_KEYS
+        value: false
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_TEMP_USE_JDBC_METADATA_DEFAULTS
         value: false
 
       # Spring Session JDBC (fixes "spring_session does not exist" error)
