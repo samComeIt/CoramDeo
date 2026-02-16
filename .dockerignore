@@ -1,0 +1,41 @@
+# Exclude build artifacts
+target/
+*.jar
+*.war
+
+# Exclude IDE files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Exclude Git
+.git/
+.gitignore
+
+# Exclude documentation
+*.md
+CLAUDE.md
+
+# Exclude frontend (if building separately)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Exclude test files
+src/test/
+
+# Exclude local config
+.env
+.env.local
+application-local.properties
+
+# Exclude Docker files themselves
+Dockerfile
+.dockerignore
+
+# Exclude logs
+*.log
+
+# Exclude MCP config
+.mcp.json
