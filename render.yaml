@@ -6,7 +6,7 @@ services:
     region: singapore
     branch: main
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /api/admin/groups
+    healthCheckPath: /health
     autoDeploy: true
     envVars:
       # Database Connection (Supabase PostgreSQL)
