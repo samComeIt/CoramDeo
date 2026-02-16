@@ -1,8 +1,13 @@
 import axios from 'axios';
 import authService from './authService';
 
+// Use environment variable for API URL, fallback to relative path for dev proxy
+const baseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
+
 const api = axios.create({
-  baseURL: '/api'
+  baseURL
 });
 
 // Add token to all requests (check both admin and user tokens)
