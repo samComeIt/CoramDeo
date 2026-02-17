@@ -12,6 +12,9 @@ const userAuthService = {
       localStorage.setItem('userId', response.data.adminId); // Backend returns adminId for user ID too
       localStorage.setItem('userName', response.data.username);
       localStorage.setItem('userType', 'user'); // To distinguish from admin
+
+      // Trigger auth change event
+      window.dispatchEvent(new Event('authChange'));
     }
 
     return response.data;
@@ -22,6 +25,9 @@ const userAuthService = {
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
     localStorage.removeItem('userType');
+
+    // Trigger auth change event
+    window.dispatchEvent(new Event('authChange'));
   },
 
   isAuthenticated: () => {

@@ -12,12 +12,10 @@ import Books from './components/Books';
 import UserProfile from './components/UserProfile';
 import UserParticipation from './components/UserParticipation';
 import PrivateRoute from './components/PrivateRoute';
-import authService from './services/authService';
-import userAuthService from './services/userAuthService';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-  const isAdminAuthenticated = authService.isAuthenticated();
-  const isUserAuthenticated = userAuthService.isAuthenticated();
+  const { isAdminAuthenticated, isUserAuthenticated } = useAuth();
 
   return (
     <Router>

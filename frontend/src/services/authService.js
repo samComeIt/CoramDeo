@@ -9,6 +9,9 @@ class AuthService {
 
     if (response.data.token) {
       localStorage.setItem('admin', JSON.stringify(response.data));
+
+      // Trigger auth change event
+      window.dispatchEvent(new Event('authChange'));
     }
 
     return response.data;
@@ -16,6 +19,9 @@ class AuthService {
 
   logout() {
     localStorage.removeItem('admin');
+
+    // Trigger auth change event
+    window.dispatchEvent(new Event('authChange'));
   }
 
   async register(username, name, password) {
