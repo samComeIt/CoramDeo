@@ -68,6 +68,12 @@ public class WeeklyRecordService {
             throw new IllegalArgumentException("Memorize must be between 0 and 4");
         }
 
+        if (record.getFine() == null) {
+            record.setFine(0);
+        } else if (record.getFine() < 0) {
+            throw new IllegalArgumentException("Fine must be 0 or greater");
+        }
+
         record.setParticipation(participation);
         return recordRepository.save(record);
     }
@@ -137,6 +143,13 @@ public class WeeklyRecordService {
 
         if (recordDetails.getSubmittedDate() != null) {
             record.setSubmittedDate(recordDetails.getSubmittedDate());
+        }
+
+        if (recordDetails.getFine() != null) {
+            if (recordDetails.getFine() < 0) {
+                throw new IllegalArgumentException("Fine must be 0 or greater");
+            }
+            record.setFine(recordDetails.getFine());
         }
 
         return recordRepository.save(record);

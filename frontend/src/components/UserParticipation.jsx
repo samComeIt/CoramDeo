@@ -65,7 +65,10 @@ function UserParticipation() {
 
   const handleEdit = (participation) => {
     setEditingRecord(participation.participationId);
-    setFormData(participation.weeklyRecord || {
+    setFormData(participation.weeklyRecord ? {
+      ...participation.weeklyRecord,
+      fine: participation.weeklyRecord.fine ?? 0
+    } : {
       weekNumber: 1,
       service1: 'N/A',
       service2: 'N/A',
@@ -75,6 +78,7 @@ function UserParticipation() {
       reading: 0,
       pray: 0,
       memorize: 0,
+      fine: 0,
       submittedDate: new Date().toISOString().split('T')[0]
     });
   };
@@ -378,6 +382,19 @@ function UserParticipation() {
 
                     <div className="form-row">
                       <div className="form-group">
+                        <label>벌금</label>
+                        <input
+                          type="number"
+                          value={formData.fine ?? 0}
+                          onChange={(e) => handleChange('fine', parseInt(e.target.value) || 0)}
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
                         <label>Submitted Date</label>
                         <input
                           type="date"
@@ -442,6 +459,11 @@ function UserParticipation() {
                               <span className="record-value">{participation.weeklyRecord.memorize}/4</span>
                             </div>
                           )}
+
+                          <div className="record-item">
+                            <span className="record-label">벌금:</span>
+                            <span className="record-value">{Intl.NumberFormat().format(participation.weeklyRecord.fine) ?? 0}원</span>
+                          </div>
                         </div>
 
                         <button onClick={() => handleEdit(participation)} className="edit-button">

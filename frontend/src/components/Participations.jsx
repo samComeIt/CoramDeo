@@ -36,6 +36,7 @@ function Participations() {
     reading: 0,
     pray: 0,
     memorize: 0,
+    fine: 0,
     submittedDate: ''
   });
   const [semesterUserBooks, setSemesterUserBooks] = useState([]);
@@ -235,6 +236,7 @@ function Participations() {
         reading: participation.weeklyRecord.reading,
         pray: participation.weeklyRecord.pray,
         memorize: participation.weeklyRecord.memorize,
+        fine: participation.weeklyRecord.fine ?? 0,
         submittedDate: participation.weeklyRecord.submittedDate || ''
       });
     } else {
@@ -248,6 +250,7 @@ function Participations() {
         reading: 0,
         pray: 0,
         memorize: 0,
+        fine: 0,
         submittedDate: ''
       });
     }
@@ -267,6 +270,7 @@ function Participations() {
       reading: 0,
       pray: 0,
       memorize: 0,
+      fine: 0,
       submittedDate: ''
     });
   };
@@ -453,6 +457,7 @@ function Participations() {
                           Reading: {participation.weeklyRecord.reading}/35 |
                           Pray: {participation.weeklyRecord.pray}/7
                           {!semester?.isBreak && ` | Memorize: ${participation.weeklyRecord.memorize}/4`}
+                          {` | Fine: ${participation.weeklyRecord.fine ?? 0}`}
                         </div>
                       ) : (
                         <span className="no-record">No record</span>
@@ -705,6 +710,22 @@ function Participations() {
                       />
                     </div>
                   )}
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="fine">Fine *</label>
+                    <input
+                      type="number"
+                      id="fine"
+                      value={recordFormData.fine}
+                      onChange={(e) =>
+                        setRecordFormData({ ...recordFormData, fine: parseInt(e.target.value) || 0 })
+                      }
+                      required
+                      min="0"
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">

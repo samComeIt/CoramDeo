@@ -183,6 +183,7 @@ public class UserController {
                     recordData.put("reading", wr.getReading());
                     recordData.put("pray", wr.getPray());
                     recordData.put("memorize", wr.getMemorize());
+                    recordData.put("fine", wr.getFine());
                     recordData.put("submittedDate", wr.getSubmittedDate());
                     data.put("weeklyRecord", recordData);
                 }

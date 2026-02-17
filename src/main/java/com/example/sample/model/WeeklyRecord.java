@@ -48,6 +48,9 @@ public class WeeklyRecord {
     @Column(name = "submitted_date")
     private LocalDate submittedDate;
 
+    @Column(name = "fine", nullable = false)
+    private Integer fine = 0;
+
     public WeeklyRecord() {
     }
 
@@ -159,5 +162,13 @@ public class WeeklyRecord {
 
     public void setSubmittedDate(LocalDate submittedDate) {
         this.submittedDate = submittedDate;
+    }
+
+    public Integer getFine() {
+        return fine;
+    }
+
+    public void setFine(Integer fine) {
+        this.fine = fine;
     }
 }
