@@ -11,14 +11,13 @@ function Groups() {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
-  const [formData, setFormData] = useState({
-    groupName: ''
-  });
+  const [formData, setFormData] = useState({ groupName: '' });
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [managingGroup, setManagingGroup] = useState(null);
   const [members, setMembers] = useState([]);
   const [availablePersons, setAvailablePersons] = useState([]);
   const [selectedPersonId, setSelectedPersonId] = useState('');
+  const [memberSearch, setMemberSearch] = useState('');
   const navigate = useNavigate();
   const admin = authService.getCurrentAdmin();
 
@@ -53,9 +52,7 @@ function Groups() {
 
   const openEditModal = (group) => {
     setEditingGroup(group);
-    setFormData({
-      groupName: group.groupName
-    });
+    setFormData({ groupName: group.groupName });
     setShowModal(true);
   };
 
@@ -93,6 +90,7 @@ function Groups() {
 
   const openManagePersonsModal = async (group) => {
     setManagingGroup(group);
+    setMemberSearch('');
     try {
       const [membersData, allPersons] = await Promise.all([
         groupService.getGroupMembers(group.groupId),
@@ -116,6 +114,7 @@ function Groups() {
     setMembers([]);
     setAvailablePersons([]);
     setSelectedPersonId('');
+    setMemberSearch('');
   };
 
   const handleAddPerson = async () => {
@@ -139,6 +138,19 @@ function Groups() {
       }
     }
   };
+
+  const getInitials = (name) =>
+    name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const avatarColors = [
+    '#667eea', '#764ba2', '#f093fb', '#4facfe',
+    '#43e97b', '#fa709a', '#fee140', '#30cfd0'
+  ];
+  const getAvatarColor = (id) => avatarColors[id % avatarColors.length];
+
+  const filteredMembers = members.filter(m =>
+    m.name.toLowerCase().includes(memberSearch.toLowerCase())
+  );
 
   return (
     <div className="groups-container">
@@ -171,7 +183,10 @@ function Groups() {
         {error && <div className="error-banner">{error}</div>}
 
         {loading ? (
-          <div className="loading">Loading groups...</div>
+          <div className="loading-state">
+            <div className="spinner" />
+            <p>Loading groups...</p>
+          </div>
         ) : groups.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📚</div>
@@ -182,170 +197,178 @@ function Groups() {
             </button>
           </div>
         ) : (
-          <div className="groups-table-container">
-            <table className="groups-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Group Name</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {groups.map((group) => (
-                  <tr key={group.groupId}>
-                    <td>{group.groupId}</td>
-                    <td className="group-name">{group.groupName}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          onClick={() => openManagePersonsModal(group)}
-                          className="manage-btn"
-                          title="Manage Persons"
-                        >
-                          👥
-                        </button>
-                        <button
-                          onClick={() => openEditModal(group)}
-                          className="edit-btn"
-                          title="Edit"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => handleDelete(group.groupId)}
-                          className="delete-btn"
-                          title="Delete"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {showModal && (
-          <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>{editingGroup ? 'Edit Group' : 'Create New Group'}</h2>
-                <button onClick={closeModal} className="close-button">
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="group-form">
-                <div className="form-group">
-                  <label htmlFor="groupName">Group Name *</label>
-                  <input
-                    type="text"
-                    id="groupName"
-                    value={formData.groupName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, groupName: e.target.value })
-                    }
-                    required
-                    placeholder="e.g., Spring 2026 Reading Group"
-                  />
-                </div>
-
-                <div className="modal-actions">
-                  <button type="button" onClick={closeModal} className="cancel-btn">
-                    Cancel
-                  </button>
-                  <button type="submit" className="submit-btn">
-                    {editingGroup ? 'Update Group' : 'Create Group'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {showMembersModal && (
-          <div className="modal-overlay" onClick={closeMembersModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>Manage Persons - {managingGroup?.groupName}</h2>
-                <button onClick={closeMembersModal} className="close-button">
-                  ×
-                </button>
-              </div>
-
-              <div className="members-management">
-                <div className="add-person-section">
-                  <h3>Add Person to Group</h3>
-                  <div className="add-person-form">
-                    <select
-                      value={selectedPersonId}
-                      onChange={(e) => setSelectedPersonId(e.target.value)}
-                      className="person-select"
-                    >
-                      <option value="">Select a person...</option>
-                      {availablePersons.map((person) => (
-                        <option key={person.personId} value={person.personId}>
-                          {person.name} (ID: {person.personId})
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      onClick={handleAddPerson}
-                      disabled={!selectedPersonId}
-                      className="add-btn"
-                    >
-                      Add to Group
-                    </button>
+          <div className="groups-grid">
+            {groups.map((group) => (
+              <div key={group.groupId} className="group-card">
+                <div className="group-card-top">
+                  <div className="group-icon">📚</div>
+                  <div className="group-info">
+                    <h3 className="group-name">{group.groupName}</h3>
+                    <span className="group-id">ID #{group.groupId}</span>
                   </div>
                 </div>
-
-                <div className="current-members-section">
-                  <h3>Current Members ({members.length})</h3>
-                  {members.length === 0 ? (
-                    <p className="no-members">No members in this group yet</p>
-                  ) : (
-                    <table className="members-table">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Name</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {members.map((member) => (
-                          <tr key={member.personId}>
-                            <td>{member.personId}</td>
-                            <td>{member.name}</td>
-                            <td>
-                              <button
-                                onClick={() => handleRemovePerson(member.personId)}
-                                className="remove-btn"
-                                title="Remove"
-                              >
-                                Remove
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
+                <div className="group-card-actions">
+                  <button
+                    onClick={() => openManagePersonsModal(group)}
+                    className="card-members-btn"
+                  >
+                    Members
+                  </button>
+                  <button
+                    onClick={() => openEditModal(group)}
+                    className="card-edit-btn"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(group.groupId)}
+                    className="card-delete-btn"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-
-              <div className="modal-actions">
-                <button onClick={closeMembersModal} className="cancel-btn">
-                  Close
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* Create / Edit Group Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editingGroup ? 'Edit Group' : 'Create New Group'}</h2>
+              <button onClick={closeModal} className="close-button">×</button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="group-form">
+              <div className="form-group">
+                <label htmlFor="groupName">Group Name *</label>
+                <input
+                  type="text"
+                  id="groupName"
+                  value={formData.groupName}
+                  onChange={(e) => setFormData({ ...formData, groupName: e.target.value })}
+                  required
+                  placeholder="e.g., Spring 2026 Reading Group"
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" onClick={closeModal} className="cancel-btn">
+                  Cancel
+                </button>
+                <button type="submit" className="submit-btn">
+                  {editingGroup ? 'Update Group' : 'Create Group'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Members Modal */}
+      {showMembersModal && (
+        <div className="modal-overlay" onClick={closeMembersModal}>
+          <div className="modal-content members-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-header-info">
+                <h2>{managingGroup?.groupName}</h2>
+                <span className="members-count-badge">{members.length} member{members.length !== 1 ? 's' : ''}</span>
+              </div>
+              <button onClick={closeMembersModal} className="close-button">×</button>
+            </div>
+
+            {/* Add Person */}
+            <div className="add-person-section">
+              <h3>Add Person</h3>
+              {availablePersons.length === 0 ? (
+                <p className="no-available">All persons are already in this group.</p>
+              ) : (
+                <div className="add-person-row">
+                  <select
+                    value={selectedPersonId}
+                    onChange={(e) => setSelectedPersonId(e.target.value)}
+                    className="person-select"
+                  >
+                    <option value="">Select a person...</option>
+                    {availablePersons.map((person) => (
+                      <option key={person.personId} value={person.personId}>
+                        {person.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleAddPerson}
+                    disabled={!selectedPersonId}
+                    className="add-btn"
+                  >
+                    + Add
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Current Members */}
+            <div className="current-members-section">
+              <div className="members-section-header">
+                <h3>Current Members</h3>
+                {members.length > 3 && (
+                  <div className="member-search-box">
+                    <span>🔍</span>
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={memberSearch}
+                      onChange={(e) => setMemberSearch(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {members.length === 0 ? (
+                <div className="no-members">
+                  <span>👤</span>
+                  <p>No members yet. Add someone above.</p>
+                </div>
+              ) : filteredMembers.length === 0 ? (
+                <p className="no-members-text">No results for "{memberSearch}"</p>
+              ) : (
+                <div className="members-list">
+                  {filteredMembers.map((member) => (
+                    <div key={member.personId} className="member-row">
+                      <div
+                        className="member-avatar"
+                        style={{ background: getAvatarColor(member.personId) }}
+                      >
+                        {getInitials(member.name)}
+                      </div>
+                      <div className="member-details">
+                        <span className="member-name">{member.name}</span>
+                        <span className="member-id">ID #{member.personId}</span>
+                      </div>
+                      <button
+                        onClick={() => handleRemovePerson(member.personId)}
+                        className="remove-btn"
+                        title="Remove from group"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button onClick={closeMembersModal} className="submit-btn">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

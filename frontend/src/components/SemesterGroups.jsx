@@ -44,6 +44,12 @@ function SemesterGroups() {
     navigate(`/semesters/${semesterId}/groups/${groupId}/persons`);
   };
 
+  const groupColors = [
+    '#667eea', '#764ba2', '#4facfe', '#43e97b',
+    '#fa709a', '#30cfd0', '#f093fb', '#fee140'
+  ];
+  const getGroupColor = (id) => groupColors[id % groupColors.length];
+
   return (
     <div className="semester-groups-container">
       <nav className="dashboard-nav">
@@ -66,42 +72,57 @@ function SemesterGroups() {
 
       <div className="semester-groups-content">
         <div className="semester-groups-header">
-          <div>
-            <h1>{semester?.name} - Groups</h1>
-            <p>Select a group to view participants</p>
+          <div className="breadcrumb">
+            <span className="breadcrumb-item" onClick={() => navigate('/semesters')}>Semesters</span>
+            <span className="breadcrumb-sep">›</span>
+            <span className="breadcrumb-current">{semester?.name}</span>
           </div>
+          <h1>{semester?.name}</h1>
+          <p>Select a group to view its participants</p>
         </div>
 
         {error && <div className="error-banner">{error}</div>}
 
         {loading ? (
-          <div className="loading">Loading groups...</div>
+          <div className="loading-state">
+            <div className="spinner" />
+            <p>Loading groups...</p>
+          </div>
         ) : groups.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📚</div>
             <h3>No groups in this semester</h3>
-            <p>Go back to semesters to add groups</p>
-            <button onClick={() => navigate('/semesters')} className="back-button">
-              Back to Semesters
+            <p>Go back to Semesters to add groups</p>
+            <button onClick={() => navigate('/semesters')} className="nav-btn">
+              ← Back to Semesters
             </button>
           </div>
         ) : (
-          <div className="groups-grid">
-            {groups.map((group) => (
-              <div
-                key={group.groupId}
-                className="group-card"
-                onClick={() => handleGroupClick(group.groupId)}
-              >
-                <div className="group-card-icon">📚</div>
-                <h3>{group.groupName}</h3>
-                <p>Group ID: {group.groupId}</p>
-                <button className="view-persons-btn">
-                  View Persons →
-                </button>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="count-label">{groups.length} group{groups.length !== 1 ? 's' : ''}</div>
+            <div className="sg-grid">
+              {groups.map((group) => (
+                <div
+                  key={group.groupId}
+                  className="sg-card"
+                  onClick={() => handleGroupClick(group.groupId)}
+                >
+                  <div
+                    className="sg-card-accent"
+                    style={{ background: getGroupColor(group.groupId) }}
+                  />
+                  <div className="sg-card-icon" style={{ color: getGroupColor(group.groupId) }}>
+                    📚
+                  </div>
+                  <div className="sg-card-info">
+                    <h3>{group.groupName}</h3>
+                    <span className="sg-card-sub">ID #{group.groupId}</span>
+                  </div>
+                  <div className="sg-card-arrow">›</div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -8,12 +8,10 @@ function Persons() {
   const [persons, setPersons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingPerson, setEditingPerson] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ name: '', password: '' });
   const navigate = useNavigate();
   const admin = authService.getCurrentAdmin();
 
@@ -48,10 +46,7 @@ function Persons() {
 
   const openEditModal = (person) => {
     setEditingPerson(person);
-    setFormData({
-      name: person.name,
-      password: ''
-    });
+    setFormData({ name: person.name, password: '' });
     setShowModal(true);
   };
 
@@ -93,6 +88,26 @@ function Persons() {
     }
   };
 
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const avatarColors = [
+    '#667eea', '#764ba2', '#f093fb', '#4facfe',
+    '#43e97b', '#fa709a', '#fee140', '#30cfd0'
+  ];
+
+  const getAvatarColor = (id) => avatarColors[id % avatarColors.length];
+
+  const filtered = persons.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="persons-container">
       <nav className="dashboard-nav">
@@ -123,8 +138,29 @@ function Persons() {
 
         {error && <div className="error-banner">{error}</div>}
 
+        {!loading && persons.length > 0 && (
+          <div className="persons-toolbar">
+            <div className="search-box">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button className="search-clear" onClick={() => setSearch('')}>×</button>
+              )}
+            </div>
+            <span className="persons-count">{filtered.length} person{filtered.length !== 1 ? 's' : ''}</span>
+          </div>
+        )}
+
         {loading ? (
-          <div className="loading">Loading persons...</div>
+          <div className="loading-state">
+            <div className="spinner" />
+            <p>Loading persons...</p>
+          </div>
         ) : persons.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">👤</div>
@@ -134,99 +170,94 @@ function Persons() {
               Add Person
             </button>
           </div>
-        ) : (
-          <div className="persons-table-container">
-            <table className="persons-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {persons.map((person) => (
-                  <tr key={person.personId}>
-                    <td>{person.personId}</td>
-                    <td className="person-name">{person.name}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          onClick={() => openEditModal(person)}
-                          className="edit-btn"
-                          title="Edit"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => handleDelete(person.personId)}
-                          className="delete-btn"
-                          title="Delete"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        ) : filtered.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🔍</div>
+            <h3>No results for "{search}"</h3>
+            <p>Try a different name</p>
           </div>
-        )}
-
-        {showModal && (
-          <div className="modal-overlay" onClick={closeModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>{editingPerson ? 'Edit Person' : 'Add New Person'}</h2>
-                <button onClick={closeModal} className="close-button">
-                  ×
-                </button>
+        ) : (
+          <div className="persons-grid">
+            {filtered.map((person) => (
+              <div key={person.personId} className="person-card">
+                <div className="person-card-top">
+                  <div
+                    className="person-avatar"
+                    style={{ background: getAvatarColor(person.personId) }}
+                  >
+                    {getInitials(person.name)}
+                  </div>
+                  <div className="person-info">
+                    <h3 className="person-name">{person.name}</h3>
+                    <span className="person-id">ID #{person.personId}</span>
+                  </div>
+                </div>
+                <div className="person-card-actions">
+                  <button
+                    onClick={() => openEditModal(person)}
+                    className="card-edit-btn"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(person.personId)}
+                    className="card-delete-btn"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-
-              <form onSubmit={handleSubmit} className="person-form">
-                <div className="form-group">
-                  <label htmlFor="name">Name *</label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                    placeholder="e.g., John Doe"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="password">Password *</label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                    required
-                    placeholder="Enter password"
-                  />
-                  <small>Enter a secure password</small>
-                </div>
-
-                <div className="modal-actions">
-                  <button type="button" onClick={closeModal} className="cancel-btn">
-                    Cancel
-                  </button>
-                  <button type="submit" className="submit-btn">
-                    {editingPerson ? 'Update Person' : 'Add Person'}
-                  </button>
-                </div>
-              </form>
-            </div>
+            ))}
           </div>
         )}
       </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editingPerson ? 'Edit Person' : 'Add New Person'}</h2>
+              <button onClick={closeModal} className="close-button">×</button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="person-form">
+              <div className="form-group">
+                <label htmlFor="name">Name *</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  placeholder="e.g., John Doe"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password">Password *</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  placeholder="Enter password"
+                />
+                <small>Enter a secure password</small>
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" onClick={closeModal} className="cancel-btn">
+                  Cancel
+                </button>
+                <button type="submit" className="submit-btn">
+                  {editingPerson ? 'Update Person' : 'Add Person'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
