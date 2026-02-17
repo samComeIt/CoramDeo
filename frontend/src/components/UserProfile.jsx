@@ -10,6 +10,8 @@ function UserProfile() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const userName = userAuthService.getUserName() || '';
+
   useEffect(() => {
     fetchUserSemesters();
   }, []);
@@ -17,18 +19,13 @@ function UserProfile() {
   const fetchUserSemesters = async () => {
     try {
       const userId = userAuthService.getUserId();
-      console.log('Fetching semesters for user ID:', userId);
-
       if (!userId) {
         setError('Not logged in. Please login again.');
         return;
       }
-
       const data = await userService.getUserSemesters(userId);
-      console.log('Semesters received:', data);
       setSemesters(data.semesters || []);
     } catch (err) {
-      console.error('Error fetching semesters:', err);
       setError('Failed to load profile data: ' + (err.response?.data?.error || err.message || 'Unknown error'));
     } finally {
       setLoading(false);
@@ -37,7 +34,6 @@ function UserProfile() {
 
   const handleLogout = () => {
     userAuthService.logout();
-    // Force a full page reload to clear all state
     window.location.href = '/user/login';
   };
 
@@ -45,84 +41,104 @@ function UserProfile() {
     navigate(`/user/semester/${semesterId}/group/${groupId}/participations`);
   };
 
+  const getInitials = (name) =>
+    name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  const groupColors = [
+    '#667eea', '#764ba2', '#4facfe', '#43e97b',
+    '#fa709a', '#30cfd0', '#f093fb', '#fee140'
+  ];
+  const getGroupColor = (id) => groupColors[id % groupColors.length];
+
   if (loading) {
     return (
-      <div className="user-profile-container">
-        <div className="loading">Loading profile...</div>
+      <div className="up-container">
+        <div className="up-loading-state">
+          <div className="up-spinner" />
+          <p>Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="user-profile-container">
-        <div className="error-message">{error}</div>
+      <div className="up-container">
+        <div className="up-error-card">
+          <p>{error}</p>
+          <button onClick={() => window.location.href = '/user/login'} className="up-btn-primary">
+            Go to Login
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="user-profile-container">
-      <div className="user-profile-header">
-        <div className="header-content">
-          <h1>사랑하고 축복합니다, {userAuthService.getUserName()}!</h1>
-          <button onClick={handleLogout} className="logout-button">
+    <div className="up-container">
+      {/* ── Hero Header ── */}
+      <div className="up-hero">
+        <div className="up-hero-inner">
+          <div className="up-avatar">{getInitials(userName)}</div>
+          <div className="up-hero-text">
+            <p className="up-greeting">사랑하고 축복합니다</p>
+            <h1 className="up-name">{userName}</h1>
+            <p className="up-meta">{semesters.length}개 학기 등록됨</p>
+          </div>
+          <button onClick={handleLogout} className="up-logout-btn">
             Logout
           </button>
         </div>
       </div>
 
-      <div className="user-profile-content">
-        <h2>My Semester List</h2>
-
-        {semesters && semesters.length > 0 ? (
-          <div className="semesters-list">
-            {semesters.map((semester) => (
-              <div key={semester.semesterId} className="semester-card">
-                <div className="semester-header">
-                  <div>
-                    <h3>{semester.semesterName}</h3>
-                  </div>
-                </div>
-
-                <div className="groups-section">
-                  {semester.groups && semester.groups.length > 0 ? (
-                    <div className="groups-grid">
-                      {semester.groups.map((group) => {
-                        const formattedDate = group.participationDate
-                          ? new Date(group.participationDate).toLocaleDateString('ko-KR', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit'
-                            }).replace(/\. /g, '.').replace(/\.$/, '')
-                          : '';
-
-                        return (
-                          <div
-                            key={group.groupId}
-                            className="group-card"
-                            onClick={() => handleViewGroup(semester.semesterId, group.groupId)}
-                          >
-                            <div className="group-icon">📚</div>
-                            <div className="group-name">
-                              {group.groupName}
-                            </div>
-                            <div className="view-link">View Records →</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="no-data">No groups in this semester</p>
-                  )}
-                </div>
-              </div>
-            ))}
+      {/* ── Content ── */}
+      <div className="up-content">
+        {semesters.length === 0 ? (
+          <div className="up-empty">
+            <span className="up-empty-icon">📋</span>
+            <h3>등록된 학기가 없습니다</h3>
+            <p>관리자에게 문의하여 학기 등록을 요청하세요.</p>
           </div>
         ) : (
-          <div className="no-data-card">
-            <p>You are not enrolled in any semesters yet.</p>
-            <p>Contact your administrator for enrollment.</p>
+          <div className="up-semesters">
+            {semesters.map((semester) => (
+              <div key={semester.semesterId} className="up-semester-block">
+                <div className="up-semester-label">
+                  <span className="up-semester-dot" />
+                  <h2>{semester.semesterName}</h2>
+                </div>
+
+                {semester.groups && semester.groups.length > 0 ? (
+                  <div className="up-groups">
+                    {semester.groups.map((group) => (
+                      <div
+                        key={group.groupId}
+                        className="up-group-row"
+                        onClick={() => handleViewGroup(semester.semesterId, group.groupId)}
+                      >
+                        <div
+                          className="up-group-accent"
+                          style={{ background: getGroupColor(group.groupId) }}
+                        />
+                        <div
+                          className="up-group-icon"
+                          style={{ color: getGroupColor(group.groupId) }}
+                        >
+                          📚
+                        </div>
+                        <div className="up-group-info">
+                          <span className="up-group-name">{group.groupName}</span>
+                          <span className="up-group-sub">출석 및 기록 보기</span>
+                        </div>
+                        <div className="up-group-arrow">›</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="up-no-groups">이 학기에 소속된 그룹이 없습니다.</p>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>
