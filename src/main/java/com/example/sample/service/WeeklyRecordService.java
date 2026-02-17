@@ -75,8 +75,9 @@ public class WeeklyRecordService {
     private void validateService(String service, String fieldName) {
         if (service == null || (!service.equalsIgnoreCase("ontime") &&
                                 !service.equalsIgnoreCase("late") &&
-                                !service.equalsIgnoreCase("absent"))) {
-            throw new IllegalArgumentException(fieldName + " must be 'ontime', 'late', or 'absent'");
+                                !service.equalsIgnoreCase("absent") &&
+                                !service.equalsIgnoreCase("N/A"))) {
+            throw new IllegalArgumentException(fieldName + " must be 'ontime', 'late', 'absent', or 'N/A'");
         }
     }
 

@@ -28,8 +28,8 @@ function Participations() {
   const [currentParticipation, setCurrentParticipation] = useState(null);
   const [recordFormData, setRecordFormData] = useState({
     weekNumber: '',
-    service1: 'ontime',
-    service2: 'ontime',
+    service1: 'N/A',
+    service2: 'N/A',
     summary1: false,
     summary2: false,
     qt: 0,
@@ -44,7 +44,7 @@ function Participations() {
   const [availableBooks, setAvailableBooks] = useState([]);
   const [bookFormData, setBookFormData] = useState({
     bookId: '',
-    status: '',
+    status: 'N/A',
     date: ''
   });
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ function Participations() {
 
   const openBookModal = () => {
     setEditingBook(null);
-    setBookFormData({ bookId: '', status: '', date: '' });
+    setBookFormData({ bookId: '', status: 'N/A', date: '' });
     setShowBookModal(true);
   };
 
@@ -122,7 +122,7 @@ function Participations() {
   const closeBookModal = () => {
     setShowBookModal(false);
     setEditingBook(null);
-    setBookFormData({ bookId: '', status: '', date: '' });
+    setBookFormData({ bookId: '', status: 'N/A', date: '' });
   };
 
   const handleBookSubmit = async (e) => {
@@ -240,8 +240,8 @@ function Participations() {
     } else {
       setRecordFormData({
         weekNumber: '',
-        service1: 'ontime',
-        service2: 'ontime',
+        service1: 'N/A',
+        service2: 'N/A',
         summary1: false,
         summary2: false,
         qt: 0,
@@ -259,8 +259,8 @@ function Participations() {
     setCurrentParticipation(null);
     setRecordFormData({
       weekNumber: '',
-      service1: 'ontime',
-      service2: 'ontime',
+      service1: 'N/A',
+      service2: 'N/A',
       summary1: false,
       summary2: false,
       qt: 0,
@@ -582,6 +582,7 @@ function Participations() {
                       }
                       required
                     >
+                      <option value="N/A">N/A</option>
                       <option value="ontime">On Time</option>
                       <option value="late">Late</option>
                       <option value="absent">Absent</option>
@@ -598,38 +599,11 @@ function Participations() {
                       }
                       required
                     >
+                      <option value="N/A">N/A</option>
                       <option value="ontime">On Time</option>
                       <option value="late">Late</option>
                       <option value="absent">Absent</option>
                     </select>
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group checkbox-group">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={recordFormData.summary1}
-                        onChange={(e) =>
-                          setRecordFormData({ ...recordFormData, summary1: e.target.checked })
-                        }
-                      />
-                      Summary 1
-                    </label>
-                  </div>
-
-                  <div className="form-group checkbox-group">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={recordFormData.summary2}
-                        onChange={(e) =>
-                          setRecordFormData({ ...recordFormData, summary2: e.target.checked })
-                        }
-                      />
-                      Summary 2
-                    </label>
                   </div>
                 </div>
 
@@ -765,16 +739,18 @@ function Participations() {
 
                 <div className="form-group">
                   <label htmlFor="status">Status *</label>
-                  <input
-                    type="text"
+                  <select
                     id="status"
                     value={bookFormData.status}
                     onChange={(e) =>
                       setBookFormData({ ...bookFormData, status: e.target.value })
                     }
                     required
-                    placeholder="e.g., assigned, reading, completed"
-                  />
+                  >
+                    <option value="N/A">N/A</option>
+                    <option value="Not submitted">Not submitted</option>
+                    <option value="submitted">Submitted</option>
+                  </select>
                 </div>
 
                 <div className="form-group">

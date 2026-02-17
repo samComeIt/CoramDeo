@@ -104,6 +104,11 @@
   color: #742a2a;
 }
 
+.status-N\/A {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
 .record-display {
   display: flex;
   flex-direction: column;
@@ -284,6 +289,163 @@
   text-align: center;
 }
 
+/* Books Section */
+.books-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 3px solid #e2e8f0;
+}
+
+.books-section h2 {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* Records Section */
+.records-section {
+  margin-top: 0;
+}
+
+.records-section h2 {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.book-card {
+  background: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.book-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.book-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+  font-size: 1.125rem;
+}
+
+.book-author {
+  margin: 0 0 0.75rem 0;
+  color: #718096;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.book-description {
+  margin: 0 0 1rem 0;
+  color: #4a5568;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.book-status-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 1rem 0 0.5rem 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.status-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #718096;
+}
+
+.status-n-a {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.status-not-submitted {
+  background: #fef5e7;
+  color: #975a16;
+}
+
+.status-submitted {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.book-status-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0 0.5rem 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.book-status-edit label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.book-status-edit select {
+  padding: 0.625rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+.book-status-edit select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.book-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.book-date {
+  margin-top: 0.5rem;
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+.no-books-message {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 2px dashed #e2e8f0;
+}
+
+.no-books-message p {
+  margin: 0;
+}
+
+.no-records-message {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 2px dashed #e2e8f0;
+}
+
+.no-records-message p {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .user-participation-container {
     padding: 1rem;
@@ -304,5 +466,14 @@
   .save-button,
   .cancel-button {
     width: 100%;
+  }
+
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-status-display {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import userAuthService from '../services/userAuthService';
 import userService from '../services/userService';
+import semesterUserBookService from '../services/semesterUserBookService';
 import './UserParticipation.css';
 
 function UserParticipation() {
@@ -12,10 +13,25 @@ function UserParticipation() {
   const [error, setError] = useState('');
   const [editingRecord, setEditingRecord] = useState(null);
   const [formData, setFormData] = useState({});
+  const [semesterUserBooks, setSemesterUserBooks] = useState([]);
+  const [editingBook, setEditingBook] = useState(null);
+  const [bookFormData, setBookFormData] = useState({ status: 'N/A' });
 
   useEffect(() => {
-    fetchParticipations();
+    fetchData();
   }, [semesterId, groupId]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      await Promise.all([fetchParticipations(), fetchSemesterUserBooks()]);
+    } catch (err) {
+      setError('Failed to load data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchParticipations = async () => {
     try {
@@ -25,8 +41,19 @@ function UserParticipation() {
     } catch (err) {
       setError('Failed to load participations');
       console.error(err);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchSemesterUserBooks = async () => {
+    try {
+      const userId = userAuthService.getUserId();
+      const books = await semesterUserBookService.getSemesterUserBooksBySemesterAndPerson(
+        semesterId,
+        userId
+      );
+      setSemesterUserBooks(books);
+    } catch (err) {
+      console.error('Failed to fetch semester user books:', err);
     }
   };
 
@@ -34,8 +61,8 @@ function UserParticipation() {
     setEditingRecord(participation.participationId);
     setFormData(participation.weeklyRecord || {
       weekNumber: 1,
-      service1: 'absent',
-      service2: 'absent',
+      service1: 'N/A',
+      service2: 'N/A',
       summary1: false,
       summary2: false,
       qt: 0,
@@ -75,6 +102,41 @@ function UserParticipation() {
     navigate('/user/profile');
   };
 
+  const formatServiceStatus = (status) => {
+    if (!status) return 'N/A';
+    if (status === 'ontime') return 'On Time';
+    if (status === 'late') return 'Late';
+    if (status === 'absent') return 'Absent';
+    if (status === 'N/A') return 'N/A';
+    return status;
+  };
+
+  const handleEditBook = (book) => {
+    setEditingBook(book.id);
+    setBookFormData({ status: book.status });
+  };
+
+  const handleCancelBookEdit = () => {
+    setEditingBook(null);
+    setBookFormData({ status: 'N/A' });
+  };
+
+  const handleBookStatusChange = (value) => {
+    setBookFormData({ status: value });
+  };
+
+  const handleSaveBook = async (bookId) => {
+    try {
+      await semesterUserBookService.updateSemesterUserBook(bookId, bookFormData);
+      await fetchSemesterUserBooks();
+      setEditingBook(null);
+      setBookFormData({ status: 'N/A' });
+      alert('Book status updated successfully!');
+    } catch (err) {
+      alert('Failed to update book status: ' + (err.response?.data?.error || err.message));
+    }
+  };
+
   if (loading) {
     return (
       <div className="user-participation-container">
@@ -100,7 +162,7 @@ function UserParticipation() {
           ← Back to Profile
         </button>
         <div className="header-info">
-          <h1>My Participation Records</h1>
+          <h1>My Records</h1>
           {firstParticipation && (
             <p className="header-subtitle">
               {firstParticipation.semesterName} - {firstParticipation.groupName}
@@ -110,10 +172,73 @@ function UserParticipation() {
       </div>
 
       <div className="user-participation-content">
-        {participations.length > 0 ? (
-          <div className="participations-list">
-            {participations.map((participation) => (
-              <div key={participation.participationId} className="participation-card">
+        {/* Book Assignment Section */}
+        <div className="books-section">
+          <h2>My Assigned Books</h2>
+          {semesterUserBooks.length > 0 ? (
+            <div className="books-grid">
+              {semesterUserBooks.map((userBook) => (
+                <div key={userBook.id} className="book-card">
+                  <div className="book-info">
+                    <h3>{userBook.book.title}</h3>
+                    <p className="book-author">by {userBook.book.author}</p>
+                    {userBook.book.description && (
+                      <p className="book-description">{userBook.book.description}</p>
+                    )}
+                  </div>
+
+                  {editingBook === userBook.id ? (
+                    <div className="book-status-edit">
+                      <label>Status:</label>
+                      <select
+                        value={bookFormData.status}
+                        onChange={(e) => handleBookStatusChange(e.target.value)}
+                      >
+                        <option value="N/A">N/A</option>
+                        <option value="Not submitted">Not submitted</option>
+                        <option value="submitted">Submitted</option>
+                      </select>
+                      <div className="book-actions">
+                        <button onClick={() => handleSaveBook(userBook.id)} className="save-button">
+                          Save
+                        </button>
+                        <button onClick={handleCancelBookEdit} className="cancel-button">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="book-status-display">
+                      <span className="status-label">Status:</span>
+                      <span className={`status-badge status-${userBook.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {userBook.status}
+                      </span>
+                      <button onClick={() => handleEditBook(userBook)} className="edit-button">
+                        Update Status
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="book-date">
+                    <small>Due Date: {new Date(userBook.date).toLocaleDateString()}</small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-books-message">
+              <p>No books assigned yet.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Participation Records Section */}
+        <div className="records-section">
+          <h2>Participation Records</h2>
+          {participations.length > 0 ? (
+            <div className="participations-list">
+              {participations.map((participation) => (
+                <div key={participation.participationId} className="participation-card">
                 <div className="participation-header">
                   <div>
                     <h3>Week {participation.weeklyRecord?.weekNumber || 'N/A'}</h3>
@@ -145,9 +270,10 @@ function UserParticipation() {
                       <div className="form-group">
                         <label>Service 1</label>
                         <select
-                          value={formData.service1 || 'absent'}
+                          value={formData.service1 || 'N/A'}
                           onChange={(e) => handleChange('service1', e.target.value)}
                         >
+                          <option value="N/A">N/A</option>
                           <option value="ontime">On Time</option>
                           <option value="late">Late</option>
                           <option value="absent">Absent</option>
@@ -157,37 +283,14 @@ function UserParticipation() {
                       <div className="form-group">
                         <label>Service 2</label>
                         <select
-                          value={formData.service2 || 'absent'}
+                          value={formData.service2 || 'N/A'}
                           onChange={(e) => handleChange('service2', e.target.value)}
                         >
+                          <option value="N/A">N/A</option>
                           <option value="ontime">On Time</option>
                           <option value="late">Late</option>
                           <option value="absent">Absent</option>
                         </select>
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group checkbox-group">
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={formData.summary1 || false}
-                            onChange={(e) => handleChange('summary1', e.target.checked)}
-                          />
-                          Summary 1 Completed
-                        </label>
-                      </div>
-
-                      <div className="form-group checkbox-group">
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={formData.summary2 || false}
-                            onChange={(e) => handleChange('summary2', e.target.checked)}
-                          />
-                          Summary 2 Completed
-                        </label>
                       </div>
                     </div>
 
@@ -265,25 +368,15 @@ function UserParticipation() {
                           <div className="record-item">
                             <span className="record-label">Service 1:</span>
                             <span className={`record-value status-${participation.weeklyRecord.service1}`}>
-                              {participation.weeklyRecord.service1}
+                              {formatServiceStatus(participation.weeklyRecord.service1)}
                             </span>
                           </div>
 
                           <div className="record-item">
                             <span className="record-label">Service 2:</span>
                             <span className={`record-value status-${participation.weeklyRecord.service2}`}>
-                              {participation.weeklyRecord.service2}
+                              {formatServiceStatus(participation.weeklyRecord.service2)}
                             </span>
-                          </div>
-
-                          <div className="record-item">
-                            <span className="record-label">Summary 1:</span>
-                            <span className="record-value">{participation.weeklyRecord.summary1 ? '✓' : '✗'}</span>
-                          </div>
-
-                          <div className="record-item">
-                            <span className="record-label">Summary 2:</span>
-                            <span className="record-value">{participation.weeklyRecord.summary2 ? '✓' : '✗'}</span>
                           </div>
 
                           <div className="record-item">
@@ -323,12 +416,13 @@ function UserParticipation() {
                 )}
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="no-data-card">
-            <p>No participation records found for this group.</p>
-          </div>
-        )}
+            </div>
+          ) : (
+            <div className="no-records-message">
+              <p>No participation records found for this group.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

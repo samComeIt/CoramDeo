@@ -73,7 +73,7 @@ function UserProfile() {
       </div>
 
       <div className="user-profile-content">
-        <h2>My Semesters & Groups</h2>
+        <h2>My Semester List</h2>
 
         {semesters && semesters.length > 0 ? (
           <div className="semesters-list">
