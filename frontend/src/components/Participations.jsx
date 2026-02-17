@@ -447,6 +447,8 @@ function Participations() {
                           Week {participation.weeklyRecord.weekNumber} |
                           S1: {participation.weeklyRecord.service1} |
                           S2: {participation.weeklyRecord.service2} |
+                          Sum1: {participation.weeklyRecord.summary1 ? 'O' : 'X'} |
+                          Sum2: {participation.weeklyRecord.summary2 ? 'O' : 'X'} |
                           QT: {participation.weeklyRecord.qt}/6 |
                           Reading: {participation.weeklyRecord.reading}/35 |
                           Pray: {participation.weeklyRecord.pray}/7 |
@@ -603,6 +605,38 @@ function Participations() {
                       <option value="ontime">On Time</option>
                       <option value="late">Late</option>
                       <option value="absent">Absent</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="summary1">Summary 1 *</label>
+                    <select
+                      id="summary1"
+                      value={recordFormData.summary1 === true ? 'O' : recordFormData.summary1 === false ? 'X' : 'X'}
+                      onChange={(e) =>
+                        setRecordFormData({ ...recordFormData, summary1: e.target.value === 'O' })
+                      }
+                      required
+                    >
+                      <option value="X">X</option>
+                      <option value="O">O</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="summary2">Summary 2 *</label>
+                    <select
+                      id="summary2"
+                      value={recordFormData.summary2 === true ? 'O' : recordFormData.summary2 === false ? 'X' : 'X'}
+                      onChange={(e) =>
+                        setRecordFormData({ ...recordFormData, summary2: e.target.value === 'O' })
+                      }
+                      required
+                    >
+                      <option value="X">X</option>
+                      <option value="O">O</option>
                     </select>
                   </div>
                 </div>

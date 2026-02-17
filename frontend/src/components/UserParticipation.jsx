@@ -159,10 +159,10 @@ function UserParticipation() {
     <div className="user-participation-container">
       <div className="user-participation-header">
         <button onClick={handleBackToProfile} className="back-button">
-          ← Back to Profile
+          ← 프로필로 뒤로가기
         </button>
         <div className="header-info">
-          <h1>My Records</h1>
+          <h1>마이 코람데오</h1>
           {firstParticipation && (
             <p className="header-subtitle">
               {firstParticipation.semesterName} - {firstParticipation.groupName}
@@ -174,7 +174,7 @@ function UserParticipation() {
       <div className="user-participation-content">
         {/* Book Assignment Section */}
         <div className="books-section">
-          <h2>My Assigned Books</h2>
+          <h2>독서과제</h2>
           {semesterUserBooks.length > 0 ? (
             <div className="books-grid">
               {semesterUserBooks.map((userBook) => (
@@ -234,7 +234,7 @@ function UserParticipation() {
 
         {/* Participation Records Section */}
         <div className="records-section">
-          <h2>Participation Records</h2>
+          <h2>마이 코람데오 리스트</h2>
           {participations.length > 0 ? (
             <div className="participations-list">
               {participations.map((participation) => (
@@ -268,7 +268,7 @@ function UserParticipation() {
 
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Service 1</label>
+                        <label>대예배 출석</label>
                         <select
                           value={formData.service1 || 'N/A'}
                           onChange={(e) => handleChange('service1', e.target.value)}
@@ -281,7 +281,7 @@ function UserParticipation() {
                       </div>
 
                       <div className="form-group">
-                        <label>Service 2</label>
+                        <label>대청부 출석</label>
                         <select
                           value={formData.service2 || 'N/A'}
                           onChange={(e) => handleChange('service2', e.target.value)}
@@ -290,6 +290,30 @@ function UserParticipation() {
                           <option value="ontime">On Time</option>
                           <option value="late">Late</option>
                           <option value="absent">Absent</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>대예배 설교요약</label>
+                        <select
+                          value={formData.summary1 === true ? 'O' : formData.summary1 === false ? 'X' : 'X'}
+                          onChange={(e) => handleChange('summary1', e.target.value === 'O')}
+                        >
+                          <option value="X">X</option>
+                          <option value="O">O</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>대청부 설교요약</label>
+                        <select
+                          value={formData.summary2 === true ? 'O' : formData.summary2 === false ? 'X' : 'X'}
+                          onChange={(e) => handleChange('summary2', e.target.value === 'O')}
+                        >
+                          <option value="X">X</option>
+                          <option value="O">O</option>
                         </select>
                       </div>
                     </div>
@@ -308,7 +332,7 @@ function UserParticipation() {
                       </div>
 
                       <div className="form-group">
-                        <label>Reading (0-35 chapters)</label>
+                        <label>말씀 (0-35 chapters)</label>
                         <input
                           type="number"
                           value={formData.reading || 0}
@@ -320,7 +344,7 @@ function UserParticipation() {
                       </div>
 
                       <div className="form-group">
-                        <label>Prayer (0-7 days)</label>
+                        <label>기도(30분) (0-7 days)</label>
                         <input
                           type="number"
                           value={formData.pray || 0}
@@ -332,7 +356,7 @@ function UserParticipation() {
                       </div>
 
                       <div className="form-group">
-                        <label>Memorize (0-4)</label>
+                        <label>암송 (0-4)</label>
                         <input
                           type="number"
                           value={formData.memorize || 0}
@@ -366,17 +390,27 @@ function UserParticipation() {
                       <>
                         <div className="record-grid">
                           <div className="record-item">
-                            <span className="record-label">Service 1:</span>
+                            <span className="record-label">대예배 출석:</span>
                             <span className={`record-value status-${participation.weeklyRecord.service1}`}>
                               {formatServiceStatus(participation.weeklyRecord.service1)}
                             </span>
                           </div>
 
                           <div className="record-item">
-                            <span className="record-label">Service 2:</span>
+                            <span className="record-label">대청부 출석:</span>
                             <span className={`record-value status-${participation.weeklyRecord.service2}`}>
                               {formatServiceStatus(participation.weeklyRecord.service2)}
                             </span>
+                          </div>
+
+                          <div className="record-item">
+                            <span className="record-label">대예배 설교요약:</span>
+                            <span className="record-value">{participation.weeklyRecord.summary1 ? 'O' : 'X'}</span>
+                          </div>
+
+                          <div className="record-item">
+                            <span className="record-label">대청부 설교요약:</span>
+                            <span className="record-value">{participation.weeklyRecord.summary2 ? 'O' : 'X'}</span>
                           </div>
 
                           <div className="record-item">
@@ -385,17 +419,17 @@ function UserParticipation() {
                           </div>
 
                           <div className="record-item">
-                            <span className="record-label">Reading:</span>
+                            <span className="record-label">말씀:</span>
                             <span className="record-value">{participation.weeklyRecord.reading}/35</span>
                           </div>
 
                           <div className="record-item">
-                            <span className="record-label">Prayer:</span>
+                            <span className="record-label">기도(30분):</span>
                             <span className="record-value">{participation.weeklyRecord.pray}/7</span>
                           </div>
 
                           <div className="record-item">
-                            <span className="record-label">Memorize:</span>
+                            <span className="record-label">암송:</span>
                             <span className="record-value">{participation.weeklyRecord.memorize}/4</span>
                           </div>
                         </div>

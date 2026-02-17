@@ -65,7 +65,7 @@ function UserProfile() {
     <div className="user-profile-container">
       <div className="user-profile-header">
         <div className="header-content">
-          <h1>Welcome, {userAuthService.getUserName()}!</h1>
+          <h1>사랑하고 축복합니다, {userAuthService.getUserName()}!</h1>
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
@@ -82,9 +82,6 @@ function UserProfile() {
                 <div className="semester-header">
                   <div>
                     <h3>{semester.semesterName}</h3>
-                    <p className="semester-dates">
-                      {new Date(semester.sdate).toLocaleDateString()} - {new Date(semester.edate).toLocaleDateString()}
-                    </p>
                   </div>
                 </div>
 
@@ -108,7 +105,7 @@ function UserProfile() {
                           >
                             <div className="group-icon">📚</div>
                             <div className="group-name">
-                              {group.groupName}{formattedDate ? `(${formattedDate})` : ''}
+                              {group.groupName}
                             </div>
                             <div className="view-link">View Records →</div>
                           </div>
