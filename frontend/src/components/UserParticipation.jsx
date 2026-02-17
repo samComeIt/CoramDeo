@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import userAuthService from '../services/userAuthService';
 import userService from '../services/userService';
 import semesterUserBookService from '../services/semesterUserBookService';
+import semesterService from '../services/semesterService';
 import './UserParticipation.css';
 
 function UserParticipation() {
@@ -16,6 +17,7 @@ function UserParticipation() {
   const [semesterUserBooks, setSemesterUserBooks] = useState([]);
   const [editingBook, setEditingBook] = useState(null);
   const [bookFormData, setBookFormData] = useState({ status: 'N/A' });
+  const [semester, setSemester] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -24,7 +26,11 @@ function UserParticipation() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      await Promise.all([fetchParticipations(), fetchSemesterUserBooks()]);
+      await Promise.all([
+        fetchParticipations(),
+        fetchSemesterUserBooks(),
+        semesterService.getSemesterById(semesterId).then(setSemester)
+      ]);
     } catch (err) {
       setError('Failed to load data');
       console.error(err);
@@ -355,17 +361,19 @@ function UserParticipation() {
                         />
                       </div>
 
-                      <div className="form-group">
-                        <label>암송 (0-4)</label>
-                        <input
-                          type="number"
-                          value={formData.memorize || 0}
-                          onChange={(e) => handleChange('memorize', parseInt(e.target.value))}
-                          min="0"
-                          max="4"
-                          required
-                        />
-                      </div>
+                      {!semester?.isBreak && (
+                        <div className="form-group">
+                          <label>암송 (0-4)</label>
+                          <input
+                            type="number"
+                            value={formData.memorize || 0}
+                            onChange={(e) => handleChange('memorize', parseInt(e.target.value))}
+                            min="0"
+                            max="4"
+                            required
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="form-row">
@@ -428,10 +436,12 @@ function UserParticipation() {
                             <span className="record-value">{participation.weeklyRecord.pray}/7</span>
                           </div>
 
-                          <div className="record-item">
-                            <span className="record-label">암송:</span>
-                            <span className="record-value">{participation.weeklyRecord.memorize}/4</span>
-                          </div>
+                          {!semester?.isBreak && (
+                            <div className="record-item">
+                              <span className="record-label">암송:</span>
+                              <span className="record-value">{participation.weeklyRecord.memorize}/4</span>
+                            </div>
+                          )}
                         </div>
 
                         <button onClick={() => handleEdit(participation)} className="edit-button">

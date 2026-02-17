@@ -15,7 +15,8 @@ function Semesters() {
   const [formData, setFormData] = useState({
     name: '',
     sdate: '',
-    edate: ''
+    edate: '',
+    isBreak: false
   });
   const [showGroupsModal, setShowGroupsModal] = useState(false);
   const [managingSemester, setManagingSemester] = useState(null);
@@ -55,7 +56,7 @@ function Semesters() {
 
   const openCreateModal = () => {
     setEditingSemester(null);
-    setFormData({ name: '', sdate: '', edate: '' });
+    setFormData({ name: '', sdate: '', edate: '', isBreak: false });
     setShowModal(true);
   };
 
@@ -64,7 +65,8 @@ function Semesters() {
     setFormData({
       name: semester.name,
       sdate: semester.sdate,
-      edate: semester.edate
+      edate: semester.edate,
+      isBreak: semester.isBreak ?? false
     });
     setShowModal(true);
   };
@@ -72,7 +74,7 @@ function Semesters() {
   const closeModal = () => {
     setShowModal(false);
     setEditingSemester(null);
-    setFormData({ name: '', sdate: '', edate: '' });
+    setFormData({ name: '', sdate: '', edate: '', isBreak: false });
   };
 
   const handleSubmit = async (e) => {
@@ -203,7 +205,7 @@ function Semesters() {
     <div className="semesters-container">
       <nav className="dashboard-nav">
         <div className="nav-brand">
-          <h2>Semester Reading Group</h2>
+          <h2>Coram Deo</h2>
         </div>
         <div className="nav-user">
           <span>Welcome, {admin?.name}</span>
@@ -249,6 +251,7 @@ function Semesters() {
                   <th>Name</th>
                   <th>Start Date</th>
                   <th>End Date</th>
+                  <th>Break</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -259,6 +262,7 @@ function Semesters() {
                     <td className="semester-name">{semester.name}</td>
                     <td>{semester.sdate}</td>
                     <td>{semester.edate}</td>
+                    <td>{semester.isBreak ? 'O' : 'X'}</td>
                     <td>
                       <div className="action-buttons">
                         <button
@@ -355,6 +359,20 @@ function Semesters() {
                     required
                   />
                   <small>End date must be after start date</small>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="isBreak">Break Semester</label>
+                  <select
+                    id="isBreak"
+                    value={formData.isBreak ? '1' : '0'}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isBreak: e.target.value === '1' })
+                    }
+                  >
+                    <option value="0">X (Normal)</option>
+                    <option value="1">O (Break)</option>
+                  </select>
                 </div>
 
                 <div className="modal-actions">

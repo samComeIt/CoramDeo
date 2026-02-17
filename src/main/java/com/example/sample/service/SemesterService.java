@@ -62,6 +62,8 @@ public class SemesterService {
             semester.setEdate(semesterDetails.getEdate());
         }
 
+        semester.setBreak(semesterDetails.isBreak());
+
         if (semester.getEdate().isBefore(semester.getSdate())) {
             throw new IllegalArgumentException("End date must be after start date");
         }

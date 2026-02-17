@@ -308,7 +308,7 @@ function Participations() {
     <div className="participations-container">
       <nav className="dashboard-nav">
         <div className="nav-brand">
-          <h2>Semester Reading Group</h2>
+          <h2>Coram Deo</h2>
         </div>
         <div className="nav-user">
           <span>Welcome, {admin?.name}</span>
@@ -451,8 +451,8 @@ function Participations() {
                           Sum2: {participation.weeklyRecord.summary2 ? 'O' : 'X'} |
                           QT: {participation.weeklyRecord.qt}/6 |
                           Reading: {participation.weeklyRecord.reading}/35 |
-                          Pray: {participation.weeklyRecord.pray}/7 |
-                          Memorize: {participation.weeklyRecord.memorize}/4
+                          Pray: {participation.weeklyRecord.pray}/7
+                          {!semester?.isBreak && ` | Memorize: ${participation.weeklyRecord.memorize}/4`}
                         </div>
                       ) : (
                         <span className="no-record">No record</span>
@@ -689,20 +689,22 @@ function Participations() {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="memorize">Memorize (0-4) *</label>
-                    <input
-                      type="number"
-                      id="memorize"
-                      value={recordFormData.memorize}
-                      onChange={(e) =>
-                        setRecordFormData({ ...recordFormData, memorize: parseInt(e.target.value) })
-                      }
-                      required
-                      min="0"
-                      max="4"
-                    />
-                  </div>
+                  {!semester?.isBreak && (
+                    <div className="form-group">
+                      <label htmlFor="memorize">Memorize (0-4) *</label>
+                      <input
+                        type="number"
+                        id="memorize"
+                        value={recordFormData.memorize}
+                        onChange={(e) =>
+                          setRecordFormData({ ...recordFormData, memorize: parseInt(e.target.value) })
+                        }
+                        required
+                        min="0"
+                        max="4"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-group">

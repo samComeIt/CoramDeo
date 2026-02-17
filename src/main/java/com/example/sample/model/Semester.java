@@ -1,6 +1,7 @@
 package com.example.sample.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -23,6 +24,10 @@ public class Semester {
 
     @Column(nullable = false)
     private LocalDate edate;
+
+    @Column(nullable = false)
+    @JsonProperty("isBreak")
+    private boolean isBreak = false;
 
     @ManyToMany
     @JoinTable(
@@ -49,6 +54,7 @@ public class Semester {
         this.name = name;
         this.sdate = sdate;
         this.edate = edate;
+        this.isBreak = false;
     }
 
     // Getters and Setters
@@ -82,6 +88,14 @@ public class Semester {
 
     public void setEdate(LocalDate edate) {
         this.edate = edate;
+    }
+
+    public boolean isBreak() {
+        return isBreak;
+    }
+
+    public void setBreak(boolean isBreak) {
+        this.isBreak = isBreak;
     }
 
     public Set<Group> getGroups() {

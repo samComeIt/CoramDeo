@@ -36,7 +36,7 @@ function UserLogin() {
       <div className="login-card">
         <div className="login-header">
           <h1>User Login</h1>
-          <p>Semester Reading Group Management System</p>
+          <p>Coram Deo Management System</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">

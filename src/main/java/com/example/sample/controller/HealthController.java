@@ -14,7 +14,7 @@ public class HealthController {
     public ResponseEntity<Map<String, String>> health() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
-        response.put("message", "Semester Reading Group Management System is running");
+        response.put("message", "Coram Deo Management System is running");
         return ResponseEntity.ok(response);
     }
 
@@ -22,7 +22,7 @@ public class HealthController {
     public ResponseEntity<Map<String, String>> root() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
-        response.put("service", "Semester Reading Group Management API");
+        response.put("service", "Coram Deo Management API");
         response.put("version", "1.0.0");
         return ResponseEntity.ok(response);
     }

@@ -144,7 +144,7 @@ function Groups() {
     <div className="groups-container">
       <nav className="dashboard-nav">
         <div className="nav-brand">
-          <h2>Semester Reading Group</h2>
+          <h2>Coram Deo</h2>
         </div>
         <div className="nav-user">
           <span>Welcome, {admin?.name}</span>
