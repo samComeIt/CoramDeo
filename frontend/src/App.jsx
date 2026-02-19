@@ -9,6 +9,7 @@ import Semesters from './components/Semesters';
 import SemesterGroups from './components/SemesterGroups';
 import GroupPersons from './components/GroupPersons';
 import Participations from './components/Participations';
+import AdminParticipations from './components/AdminParticipations';
 import Books from './components/Books';
 import UserProfile from './components/UserProfile';
 import UserParticipation from './components/UserParticipation';
@@ -77,6 +78,14 @@ function App() {
           element={
             <PrivateRoute>
               <Books />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/participations"
+          element={
+            <PrivateRoute>
+              <AdminParticipations />
             </PrivateRoute>
           }
         />

@@ -77,6 +77,15 @@ function Dashboard() {
               View Books
             </button>
           </div>
+
+          <div className="dashboard-card">
+            <div className="card-icon">📋</div>
+            <h3>All Participations</h3>
+            <p>View and manage all participations with advanced filtering</p>
+            <button className="card-button" onClick={() => navigate('/admin/participations')}>
+              View All Participations
+            </button>
+          </div>
         </div>
       </div>
     </div>

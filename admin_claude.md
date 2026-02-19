@@ -1114,6 +1114,438 @@ String formattedDate = admin.getCreatedAt().format(formatter);
 - Viewer has read-only access to all data
 - Moderator can manage content but not admin accounts
 
+## Participation Management Endpoints
+
+The admin system provides comprehensive endpoints for managing participations with pagination support.
+
+### Get All Participations (with Pagination)
+
+Retrieves a paginated list of all participations.
+
+```http
+GET /api/admin/participations?page={page}&size={size}&sort={sort}
+```
+
+**Query Parameters:**
+- `page` (Integer, Optional) - Page number (0-indexed, default: 0)
+- `size` (Integer, Optional) - Number of items per page (default: 20, max: 100)
+- `sort` (String, Optional) - Sort criteria (e.g., "participationDate,desc" or "id,asc")
+
+**Response:** `200 OK`
+```json
+{
+  "content": [
+    {
+      "participationId": 1,
+      "semesterId": 1,
+      "semesterName": "Spring 2026",
+      "groupId": 1,
+      "groupName": "Reading Group A",
+      "personId": 1,
+      "personName": "John Doe",
+      "status": "ontime",
+      "participationDate": "2026-03-08"
+    },
+    {
+      "participationId": 2,
+      "semesterId": 1,
+      "semesterName": "Spring 2026",
+      "groupId": 1,
+      "groupName": "Reading Group A",
+      "personId": 2,
+      "personName": "Jane Smith",
+      "status": "late",
+      "participationDate": "2026-03-08"
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 20,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 50,
+  "totalPages": 3,
+  "last": false,
+  "size": 20,
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "unsorted": false,
+    "empty": false
+  },
+  "numberOfElements": 20,
+  "first": true,
+  "empty": false
+}
+```
+
+### Get Participations by Semester (with Pagination)
+
+Retrieves participations for a specific semester with pagination.
+
+```http
+GET /api/admin/participations/semester/{semesterId}?page={page}&size={size}
+```
+
+**Path Parameters:**
+- `semesterId` (Integer) - Semester ID
+
+**Query Parameters:**
+- `page` (Integer, Optional) - Page number (default: 0)
+- `size` (Integer, Optional) - Items per page (default: 20)
+
+**Response:** `200 OK` - Same pagination format as above
+
+### Get Participations by Group (with Pagination)
+
+Retrieves participations for a specific group with pagination.
+
+```http
+GET /api/admin/participations/group/{groupId}?page={page}&size={size}
+```
+
+**Path Parameters:**
+- `groupId` (Integer) - Group ID
+
+**Query Parameters:**
+- `page` (Integer, Optional) - Page number (default: 0)
+- `size` (Integer, Optional) - Items per page (default: 20)
+
+**Response:** `200 OK` - Same pagination format as above
+
+### Get Participations by Person (with Pagination)
+
+Retrieves participations for a specific person with pagination.
+
+```http
+GET /api/admin/participations/person/{personId}?page={page}&size={size}
+```
+
+**Path Parameters:**
+- `personId` (Integer) - Person ID
+
+**Query Parameters:**
+- `page` (Integer, Optional) - Page number (default: 0)
+- `size` (Integer, Optional) - Items per page (default: 20)
+
+**Response:** `200 OK` - Same pagination format as above
+
+### Get Participations with Filters
+
+Retrieves participations with multiple filter criteria and pagination.
+
+```http
+GET /api/admin/participations/search?startDate={startDate}&endDate={endDate}&semesterId={semesterId}&groupId={groupId}&personId={personId}&status={status}&page={page}&size={size}&sort={sort}
+```
+
+**Query Parameters:**
+- `startDate` (String, **Required**) - Filter by date range start (YYYY-MM-DD format)
+- `endDate` (String, **Required**) - Filter by date range end (YYYY-MM-DD format)
+- `semesterId` (Integer, Optional) - Filter by semester
+- `groupId` (Integer, Optional) - Filter by group
+- `personId` (Integer, Optional) - Filter by person
+- `status` (String, Optional) - Filter by status (ontime, late, absent)
+- `page` (Integer, Optional) - Page number (default: 0)
+- `size` (Integer, Optional) - Items per page (default: 20)
+- `sort` (String, Optional) - Sort criteria (e.g., "participationDate,desc")
+
+**Response:** `200 OK` - Same pagination format as above
+
+**Validation Rules:**
+- `startDate` and `endDate` are **required** - request will fail with 400 Bad Request if missing
+- `startDate` must not be after `endDate` - will return error if validation fails
+- Date format must be `YYYY-MM-DD` (ISO 8601 format)
+
+**Example Request:**
+```bash
+curl "http://localhost:8080/api/admin/participations/search?startDate=2026-03-01&endDate=2026-03-31&semesterId=1&status=ontime&page=0&size=10&sort=participationDate,desc"
+```
+
+**Error Responses:**
+- `400 Bad Request` - Missing required parameters (startDate or endDate)
+- `400 Bad Request` - Start date is after end date
+- `400 Bad Request` - Invalid date format
+
+### Pagination Response Details
+
+**Response Fields:**
+- `content` - Array of participation objects for current page
+- `pageable` - Pagination information about the current page
+- `totalElements` - Total number of items across all pages
+- `totalPages` - Total number of pages
+- `last` - Boolean indicating if this is the last page
+- `size` - Number of items per page
+- `number` - Current page number (0-indexed)
+- `first` - Boolean indicating if this is the first page
+- `empty` - Boolean indicating if the page is empty
+- `numberOfElements` - Number of items in current page
+
+### Participation DTO Structure
+
+```json
+{
+  "participationId": 1,
+  "semesterId": 1,
+  "semesterName": "Spring 2026",
+  "groupId": 1,
+  "groupName": "Reading Group A",
+  "personId": 1,
+  "personName": "John Doe",
+  "status": "ontime",
+  "participationDate": "2026-03-08",
+  "weeklyRecord": {
+    "recordId": 1,
+    "weekNumber": 1,
+    "service1": "ontime",
+    "service2": "ontime",
+    "summary1": true,
+    "summary2": true,
+    "qt": 6,
+    "reading": 35,
+    "pray": 7,
+    "memorize": 4,
+    "submittedDate": "2026-03-08"
+  }
+}
+```
+
+### Controller Implementation Example
+
+```java
+@RestController
+@RequestMapping("/api/admin/participations")
+public class ParticipationController {
+
+    @Autowired
+    private ParticipationService participationService;
+
+    @GetMapping
+    public ResponseEntity<Page<ParticipationDTO>> getAllParticipations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "participationDate,desc") String sort) {
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction = sortParams.length > 1 &&
+            sortParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortParams[0]));
+        Page<ParticipationDTO> participations = participationService.getAllParticipations(pageable);
+
+        return ResponseEntity.ok(participations);
+    }
+
+    @GetMapping("/semester/{semesterId}")
+    public ResponseEntity<Page<ParticipationDTO>> getParticipationsBySemester(
+            @PathVariable Integer semesterId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ParticipationDTO> participations =
+            participationService.getParticipationsBySemester(semesterId, pageable);
+
+        return ResponseEntity.ok(participations);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchParticipations(
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Integer semesterId,
+            @RequestParam(required = false) Integer groupId,
+            @RequestParam(required = false) Integer personId,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "participationDate,desc") String sort) {
+
+        // Validate that startDate is not after endDate
+        if (startDate.isAfter(endDate)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", false, "error", "Start date must not be after end date"));
+        }
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction = sortParams.length > 1 &&
+            sortParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortParams[0]));
+
+        Page<ParticipationDTO> participations = participationService.searchParticipations(
+            semesterId, groupId, personId, status, startDate, endDate, pageable);
+
+        return ResponseEntity.ok(participations);
+    }
+}
+```
+
+### Service Layer Example
+
+```java
+@Service
+public class ParticipationService {
+
+    @Autowired
+    private ParticipationRepository participationRepository;
+
+    public Page<ParticipationDTO> getAllParticipations(Pageable pageable) {
+        Page<Participation> participations = participationRepository.findAll(pageable);
+        return participations.map(this::convertToDTO);
+    }
+
+    public Page<ParticipationDTO> getParticipationsBySemester(Integer semesterId, Pageable pageable) {
+        Page<Participation> participations =
+            participationRepository.findBySemesterId(semesterId, pageable);
+        return participations.map(this::convertToDTO);
+    }
+
+    public Page<ParticipationDTO> searchParticipations(
+            Integer semesterId, Integer groupId, Integer personId,
+            String status, LocalDate startDate, LocalDate endDate,
+            Pageable pageable) {
+
+        // Use Specification for dynamic queries
+        Specification<Participation> spec = Specification.where(null);
+
+        if (semesterId != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("semester").get("id"), semesterId));
+        }
+        if (groupId != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("group").get("id"), groupId));
+        }
+        if (personId != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("person").get("id"), personId));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.equal(root.get("status"), status));
+        }
+        if (startDate != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.greaterThanOrEqualTo(root.get("participationDate"), startDate));
+        }
+        if (endDate != null) {
+            spec = spec.and((root, query, cb) ->
+                cb.lessThanOrEqualTo(root.get("participationDate"), endDate));
+        }
+
+        Page<Participation> participations = participationRepository.findAll(spec, pageable);
+        return participations.map(this::convertToDTO);
+    }
+
+    private ParticipationDTO convertToDTO(Participation participation) {
+        ParticipationDTO dto = new ParticipationDTO();
+        dto.setParticipationId(participation.getParticipationId());
+        dto.setSemesterId(participation.getSemester().getSemesterId());
+        dto.setSemesterName(participation.getSemester().getName());
+        dto.setGroupId(participation.getGroup().getGroupId());
+        dto.setGroupName(participation.getGroup().getGroupName());
+        dto.setPersonId(participation.getPerson().getPersonId());
+        dto.setPersonName(participation.getPerson().getName());
+        dto.setStatus(participation.getStatus());
+        dto.setParticipationDate(participation.getParticipationDate());
+
+        // Include weekly record if exists
+        if (participation.getWeeklyRecord() != null) {
+            dto.setWeeklyRecord(convertWeeklyRecordToDTO(participation.getWeeklyRecord()));
+        }
+
+        return dto;
+    }
+}
+```
+
+### Repository Example with Pagination
+
+```java
+@Repository
+public interface ParticipationRepository extends JpaRepository<Participation, Integer>,
+                                                  JpaSpecificationExecutor<Participation> {
+
+    Page<Participation> findBySemesterId(Integer semesterId, Pageable pageable);
+
+    Page<Participation> findByGroupId(Integer groupId, Pageable pageable);
+
+    Page<Participation> findByPersonId(Integer personId, Pageable pageable);
+
+    Page<Participation> findByStatus(String status, Pageable pageable);
+
+    Page<Participation> findByParticipationDateBetween(
+        LocalDate startDate, LocalDate endDate, Pageable pageable);
+}
+```
+
+### Frontend Integration Example
+
+```javascript
+// participationService.js
+async getParticipations(page = 0, size = 20, sort = 'participationDate,desc') {
+  const response = await api.get('/admin/participations', {
+    params: { page, size, sort }
+  });
+  return response.data;
+}
+
+async searchParticipations(filters, page = 0, size = 20, sort = 'participationDate,desc') {
+  const response = await api.get('/admin/participations/search', {
+    params: { ...filters, page, size, sort }
+  });
+  return response.data;
+}
+
+// React component usage
+const [participations, setParticipations] = useState([]);
+const [currentPage, setCurrentPage] = useState(0);
+const [totalPages, setTotalPages] = useState(0);
+const [pageSize, setPageSize] = useState(20);
+
+const loadParticipations = async () => {
+  const data = await participationService.getParticipations(currentPage, pageSize);
+  setParticipations(data.content);
+  setTotalPages(data.totalPages);
+};
+
+// Pagination controls
+<Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={(page) => setCurrentPage(page)}
+/>
+```
+
+### Testing Examples
+
+**Search with required dates:**
+```bash
+curl "http://localhost:8080/api/admin/participations/search?startDate=2026-03-01&endDate=2026-03-31&page=0&size=20"
+```
+
+**Search with dates and filters:**
+```bash
+curl "http://localhost:8080/api/admin/participations/search?startDate=2026-03-01&endDate=2026-03-31&semesterId=1&status=ontime&page=0&size=10"
+```
+
+**Search with date range and sorting:**
+```bash
+curl "http://localhost:8080/api/admin/participations/search?startDate=2026-01-01&endDate=2026-12-31&page=1&size=20&sort=participationDate,desc"
+```
+
+**Get participations by semester:**
+```bash
+curl "http://localhost:8080/api/admin/participations/semester/1?page=0&size=20"
+```
+
 ## Controller Example
 
 ```java

@@ -3,10 +3,16 @@ package com.example.sample.controller;
 import com.example.sample.model.Participation;
 import com.example.sample.service.ParticipationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +99,37 @@ public class ParticipationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(createErrorResponse(e.getMessage()));
         }
+    }
+
+    // Search with filters and pagination
+    @GetMapping("/search")
+    public ResponseEntity<?> searchParticipations(
+            @RequestParam(required = false) Integer semesterId,
+            @RequestParam(required = false) Integer groupId,
+            @RequestParam(required = false) Integer personId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "participationDate,desc") String sort) {
+
+        // Validate that startDate is not after endDate
+        if (startDate.isAfter(endDate)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(createErrorResponse("Start date must not be after end date"));
+        }
+
+        String[] sortParams = sort.split(",");
+        Sort.Direction direction = sortParams.length > 1 &&
+            sortParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortParams[0]));
+
+        Page<Participation> participations = participationService.searchParticipations(
+            semesterId, groupId, personId, status, startDate, endDate, pageable);
+
+        return ResponseEntity.ok(participations);
     }
 
     private Map<String, Object> createErrorResponse(String message) {
