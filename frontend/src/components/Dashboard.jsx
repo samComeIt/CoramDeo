@@ -34,6 +34,15 @@ function Dashboard() {
 
         <div className="dashboard-grid">
           <div className="dashboard-card">
+            <div className="card-icon">🔐</div>
+            <h3>Admins</h3>
+            <p>Manage admin accounts and permissions</p>
+            <button className="card-button" onClick={() => navigate('/admins')}>
+              View Admins
+            </button>
+          </div>
+
+          <div className="dashboard-card">
             <div className="card-icon">👥</div>
             <h3>Groups</h3>
             <p>Manage reading groups and add persons</p>

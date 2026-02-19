@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './components/Login';
 import UserLogin from './components/UserLogin';
 import Dashboard from './components/Dashboard';
+import Admins from './components/Admins';
 import Groups from './components/Groups';
 import Persons from './components/Persons';
 import Semesters from './components/Semesters';
@@ -36,6 +37,14 @@ function App() {
           element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admins"
+          element={
+            <PrivateRoute>
+              <Admins />
             </PrivateRoute>
           }
         />

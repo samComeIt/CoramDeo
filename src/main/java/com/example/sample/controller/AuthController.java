@@ -29,19 +29,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            Admin admin = adminService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+            Admin admin = adminService.loginAdmin(loginRequest.getUsername(), loginRequest.getPassword());
 
-            String token = jwtUtil.generateToken(admin.getUsername(), admin.getAdminId());
+            String token = jwtUtil.generateToken(admin.getUsername(), admin.getId());
 
             LoginResponse response = new LoginResponse(
                     token,
-                    admin.getAdminId(),
+                    admin.getId(),
                     admin.getUsername(),
                     admin.getName()
             );
 
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("deleted")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(createErrorResponse("Account has been deleted"));
+            }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(createErrorResponse("Invalid credentials"));
         }
@@ -54,10 +58,10 @@ public class AuthController {
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Admin registered successfully");
-            response.put("adminId", createdAdmin.getAdminId());
+            response.put("adminId", createdAdmin.getId());
             response.put("username", createdAdmin.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(createErrorResponse(e.getMessage()));
         }

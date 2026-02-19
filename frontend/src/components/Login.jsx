@@ -19,9 +19,18 @@ function Login() {
       await authService.login(username, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(
-        err.response?.data?.error || 'Login failed. Please check your credentials.'
-      );
+      // Handle specific error cases
+      if (err.response?.status === 403) {
+        setError('Your account has been deleted. Please contact an administrator.');
+      } else if (err.response?.status === 401) {
+        setError('Invalid username or password. Please try again.');
+      } else {
+        setError(
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Login failed. Please check your credentials.'
+        );
+      }
     } finally {
       setLoading(false);
     }
