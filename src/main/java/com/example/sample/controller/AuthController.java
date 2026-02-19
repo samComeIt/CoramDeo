@@ -37,7 +37,8 @@ public class AuthController {
                     token,
                     admin.getId(),
                     admin.getUsername(),
-                    admin.getName()
+                    admin.getName(),
+                    admin.getType()
             );
 
             return ResponseEntity.ok(response);

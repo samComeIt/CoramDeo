@@ -5,6 +5,7 @@ import './Dashboard.css';
 function Dashboard() {
   const navigate = useNavigate();
   const admin = authService.getCurrentAdmin();
+  const isSuperAdmin = admin?.type === 'superadmin';
 
   const handleLogout = () => {
     authService.logout();
@@ -29,54 +30,58 @@ function Dashboard() {
       <div className="dashboard-content">
         <div className="dashboard-header">
           <h1>Admin Dashboard</h1>
-          <p>Manage your reading groups, semesters, and participants</p>
+          <p>{isSuperAdmin ? 'Manage your reading groups, semesters, and participants' : 'View participation records'}</p>
         </div>
 
         <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <div className="card-icon">🔐</div>
-            <h3>Admins</h3>
-            <p>Manage admin accounts and permissions</p>
-            <button className="card-button" onClick={() => navigate('/admins')}>
-              View Admins
-            </button>
-          </div>
+          {isSuperAdmin && (
+            <>
+              <div className="dashboard-card">
+                <div className="card-icon">🔐</div>
+                <h3>Admins</h3>
+                <p>Manage admin accounts and permissions</p>
+                <button className="card-button" onClick={() => navigate('/admins')}>
+                  View Admins
+                </button>
+              </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">👥</div>
-            <h3>Groups</h3>
-            <p>Manage reading groups and add persons</p>
-            <button className="card-button" onClick={() => navigate('/groups')}>
-              View Groups
-            </button>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">👥</div>
+                <h3>Groups</h3>
+                <p>Manage reading groups and add persons</p>
+                <button className="card-button" onClick={() => navigate('/groups')}>
+                  View Groups
+                </button>
+              </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">👤</div>
-            <h3>Persons</h3>
-            <p>Manage participants with name and password</p>
-            <button className="card-button" onClick={() => navigate('/persons')}>
-              View Persons
-            </button>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">👤</div>
+                <h3>Persons</h3>
+                <p>Manage participants with name and password</p>
+                <button className="card-button" onClick={() => navigate('/persons')}>
+                  View Persons
+                </button>
+              </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">📅</div>
-            <h3>Semesters</h3>
-            <p>Manage semesters and assign groups</p>
-            <button className="card-button" onClick={() => navigate('/semesters')}>
-              View Semesters
-            </button>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">📅</div>
+                <h3>Semesters</h3>
+                <p>Manage semesters and assign groups</p>
+                <button className="card-button" onClick={() => navigate('/semesters')}>
+                  View Semesters
+                </button>
+              </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">📚</div>
-            <h3>Books</h3>
-            <p>Manage book library with title, author, and description</p>
-            <button className="card-button" onClick={() => navigate('/books')}>
-              View Books
-            </button>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">📚</div>
+                <h3>Books</h3>
+                <p>Manage book library with title, author, and description</p>
+                <button className="card-button" onClick={() => navigate('/books')}>
+                  View Books
+                </button>
+              </div>
+            </>
+          )}
 
           <div className="dashboard-card">
             <div className="card-icon">📋</div>

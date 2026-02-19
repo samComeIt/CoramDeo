@@ -4,6 +4,7 @@ import { participationService } from '../services/participationService';
 import semesterService from '../services/semesterService';
 import groupService from '../services/groupService';
 import personService from '../services/personService';
+import authService from '../services/authService';
 import './AdminParticipations.css';
 
 function AdminParticipations() {
@@ -14,6 +15,10 @@ function AdminParticipations() {
   const [persons, setPersons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Check if current admin is superadmin
+  const currentAdmin = authService.getCurrentAdmin();
+  const isSuperAdmin = currentAdmin?.type === 'superadmin';
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
@@ -334,7 +339,7 @@ function AdminParticipations() {
               <th>Date</th>
               <th>Status</th>
               <th>Fine</th>
-              <th>Actions</th>
+              {isSuperAdmin && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -357,20 +362,22 @@ function AdminParticipations() {
                   {participation.weeklyRecord?.fine !== undefined ?
                     `₩${participation.weeklyRecord.fine.toLocaleString()}` : '-'}
                 </td>
-                <td>
-                  <button
-                    onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
-                    className="btn-view"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => handleDelete(participation.participationId)}
-                    className="btn-delete"
-                  >
-                    Delete
-                  </button>
-                </td>
+                {isSuperAdmin && (
+                  <td>
+                    <button
+                      onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
+                      className="btn-view"
+                    >
+                      View Details
+                    </button>
+                    <button
+                      onClick={() => handleDelete(participation.participationId)}
+                      className="btn-delete"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

@@ -44,7 +44,8 @@ public class UserController {
                     token,
                     person.getPersonId(),
                     person.getName(),
-                    person.getName()
+                    person.getName(),
+                    "user"  // Person login type
             );
 
             return ResponseEntity.ok(response);
