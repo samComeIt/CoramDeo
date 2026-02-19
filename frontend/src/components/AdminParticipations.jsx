@@ -58,8 +58,16 @@ function AdminParticipations() {
   });
 
   useEffect(() => {
-    loadParticipations();
+    // Only load filter data on mount, don't auto-search
     loadFilterData();
+  }, []);
+
+  // Load participations when page or page size changes (but only if filters are valid)
+  useEffect(() => {
+    // Only reload if we have valid filters and participations already exist
+    if (participations.length > 0 && filters.semesterId && filters.startDate && filters.endDate) {
+      loadParticipations();
+    }
   }, [currentPage, pageSize]);
 
   const loadFilterData = async () => {
@@ -82,6 +90,13 @@ function AdminParticipations() {
       setLoading(true);
       setError('');
 
+      // Validate required semester field
+      if (!filters.semesterId) {
+        setError('Semester is required');
+        setLoading(false);
+        return;
+      }
+
       // Validate required date fields
       if (!filters.startDate || !filters.endDate) {
         setError('Start date and end date are required');
@@ -96,7 +111,7 @@ function AdminParticipations() {
         return;
       }
 
-      // Always use search endpoint with required dates
+      // Always use search endpoint with required dates and semester
       const cleanFilters = Object.fromEntries(
         Object.entries(filters).filter(([_, value]) => value !== '')
       );
@@ -125,6 +140,7 @@ function AdminParticipations() {
 
   const handleApplyFilters = () => {
     setCurrentPage(0);
+    // Trigger search when user clicks Apply Filters
     loadParticipations();
   };
 
@@ -213,13 +229,14 @@ function AdminParticipations() {
         <h3>Filters</h3>
         <div className="filters-grid">
           <div className="filter-group">
-            <label>Semester</label>
+            <label>Semester <span className="required">*</span></label>
             <select
               name="semesterId"
               value={filters.semesterId}
               onChange={handleFilterChange}
+              required
             >
-              <option value="">All Semesters</option>
+              <option value="">Select Semester</option>
               {semesters.map(semester => (
                 <option key={semester.semesterId} value={semester.semesterId}>
                   {semester.name}
@@ -245,7 +262,7 @@ function AdminParticipations() {
           </div>
 
           <div className="filter-group">
-            <label>Person</label>
+            <label>Name</label>
             <select
               name="personId"
               value={filters.personId}
@@ -334,7 +351,7 @@ function AdminParticipations() {
               <th>ID</th>
               <th>Semester</th>
               <th>Group</th>
-              <th>Person</th>
+              <th>Name</th>
               <th>Week #</th>
               <th>Date</th>
               <th>Status</th>
@@ -384,7 +401,9 @@ function AdminParticipations() {
         </table>
 
         {participations.length === 0 && !loading && (
-          <div className="no-data">No participations found</div>
+          <div className="no-data">
+            {filters.semesterId ? 'No participations found' : 'Please select filters and click "Apply Filters" to search'}
+          </div>
         )}
       </div>
 
