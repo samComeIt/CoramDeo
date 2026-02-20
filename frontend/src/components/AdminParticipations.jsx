@@ -5,6 +5,7 @@ import semesterService from '../services/semesterService';
 import groupService from '../services/groupService';
 import personService from '../services/personService';
 import authService from '../services/authService';
+import DashboardHeader from './DashboardHeader';
 import './AdminParticipations.css';
 
 function AdminParticipations() {
@@ -208,15 +209,15 @@ function AdminParticipations() {
 
   return (
     <div className="admin-participations-container">
-      <div className="participations-header">
-        <div>
-          <h1>Participation Management</h1>
-          <p className="subtitle">View and manage all participations with advanced filtering</p>
+      <DashboardHeader />
+
+      <div className="participations-content">
+        <div className="participations-header">
+          <div>
+            <h1>Participation Management</h1>
+            <p className="subtitle">View and manage all participations with advanced filtering</p>
+          </div>
         </div>
-        <button onClick={() => navigate('/dashboard')} className="btn-secondary">
-          Back to Dashboard
-        </button>
-      </div>
 
       {error && (
         <div className="error-message">
@@ -268,7 +269,7 @@ function AdminParticipations() {
               value={filters.personId}
               onChange={handleFilterChange}
             >
-              <option value="">All Persons</option>
+              <option value="">All Users</option>
               {persons.map(person => (
                 <option key={person.personId} value={person.personId}>
                   {person.name}
@@ -356,7 +357,7 @@ function AdminParticipations() {
               <th>Date</th>
               <th>Status</th>
               <th>Fine</th>
-              {isSuperAdmin && <th>Actions</th>}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -379,22 +380,22 @@ function AdminParticipations() {
                   {participation.weeklyRecord?.fine !== undefined ?
                     `₩${participation.weeklyRecord.fine.toLocaleString()}` : '-'}
                 </td>
-                {isSuperAdmin && (
-                  <td>
-                    <button
-                      onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
-                      className="btn-view"
-                    >
-                      View Details
-                    </button>
+                <td>
+                  <button
+                    onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
+                    className="btn-view"
+                  >
+                    View Details
+                  </button>
+                  {isSuperAdmin && (
                     <button
                       onClick={() => handleDelete(participation.participationId)}
                       className="btn-delete"
                     >
                       Delete
                     </button>
-                  </td>
-                )}
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -466,6 +467,7 @@ function AdminParticipations() {
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }

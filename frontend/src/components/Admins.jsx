@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import adminService from '../services/adminService';
+import DashboardHeader from './DashboardHeader';
 import './Admins.css';
 
 function Admins() {
@@ -123,17 +124,23 @@ function Admins() {
 
   return (
     <div className="admins-container">
-      <div className="admins-header">
-        <h1>Admin Management</h1>
-        <div className="header-buttons">
-          <button onClick={loadDeletedAdmins} className="btn-secondary">
-            View Deleted Admins
-          </button>
-          <button onClick={() => setShowModal(true)} className="btn-primary">
-            Create Admin
-          </button>
+      <DashboardHeader />
+
+      <div className="admins-content">
+        <div className="admins-header">
+          <div>
+            <h1>Admin Management</h1>
+            <p>Manage system administrators and their access levels</p>
+          </div>
+          <div className="header-buttons">
+            <button onClick={loadDeletedAdmins} className="btn-secondary">
+              View Deleted Admins
+            </button>
+            <button onClick={() => setShowModal(true)} className="btn-primary">
+              Create Admin
+            </button>
+          </div>
         </div>
-      </div>
 
       {error && (
         <div className="error-message">
@@ -342,6 +349,7 @@ function Admins() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

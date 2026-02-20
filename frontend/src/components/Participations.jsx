@@ -8,6 +8,7 @@ import personService from '../services/personService';
 import bookService from '../services/bookService';
 import semesterUserBookService from '../services/semesterUserBookService';
 import authService from '../services/authService';
+import DashboardHeader from './DashboardHeader';
 import './Participations.css';
 
 function Participations() {
@@ -49,7 +50,6 @@ function Participations() {
     date: ''
   });
   const navigate = useNavigate();
-  const admin = authService.getCurrentAdmin();
 
   useEffect(() => {
     fetchData();
@@ -161,11 +161,6 @@ function Participations() {
         setError(err.response?.data?.error || 'Failed to delete book assignment');
       }
     }
-  };
-
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
   };
 
   const openCreateModal = () => {
@@ -310,29 +305,11 @@ function Participations() {
 
   return (
     <div className="participations-container">
-      <nav className="dashboard-nav">
-        <div className="nav-brand">
-          <h2>Coram Deo</h2>
-        </div>
-        <div className="nav-user">
-          <span>Welcome, {admin?.name}</span>
-          <button onClick={() => navigate('/dashboard')} className="back-button">
-            Dashboard
-          </button>
-          <button onClick={() => navigate('/semesters')} className="back-button">
-            Semesters
-          </button>
-          <button onClick={() => navigate(`/semesters/${semesterId}/groups`)} className="back-button">
-            Groups
-          </button>
-          <button onClick={() => navigate(`/semesters/${semesterId}/groups/${groupId}/persons`)} className="back-button">
-            Persons
-          </button>
-          <button onClick={handleLogout} className="logout-button">
-            Logout
-          </button>
-        </div>
-      </nav>
+      <DashboardHeader 
+        showNavigation={true} 
+        semesterId={semesterId} 
+        groupId={groupId} 
+      />
 
       <div className="participations-content">
         <div className="participations-header">
