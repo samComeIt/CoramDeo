@@ -17,9 +17,10 @@ function AdminParticipations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Check if current admin is superadmin
+  // Check if current admin is superadmin or viewer
   const currentAdmin = authService.getCurrentAdmin();
   const isSuperAdmin = currentAdmin?.type === 'superadmin';
+  const isViewer = currentAdmin?.type === 'viewer';
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
@@ -357,7 +358,7 @@ function AdminParticipations() {
               <th>Date</th>
               <th>Status</th>
               <th>Fine</th>
-              <th>Actions</th>
+              {!isViewer && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -380,22 +381,24 @@ function AdminParticipations() {
                   {participation.weeklyRecord?.fine !== undefined ?
                     `₩${participation.weeklyRecord.fine.toLocaleString()}` : '-'}
                 </td>
-                <td>
-                  <button
-                    onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
-                    className="btn-view"
-                  >
-                    View Details
-                  </button>
-                  {isSuperAdmin && (
+                {!isViewer && (
+                  <td>
                     <button
-                      onClick={() => handleDelete(participation.participationId)}
-                      className="btn-delete"
+                      onClick={() => navigate(`/semesters/${participation.semester?.semesterId || participation.semesterId}/groups/${participation.group?.groupId || participation.groupId}/persons/${participation.person?.personId || participation.personId}/participations`)}
+                      className="btn-view"
                     >
-                      Delete
+                      View Details
                     </button>
-                  )}
-                </td>
+                    {isSuperAdmin && (
+                      <button
+                        onClick={() => handleDelete(participation.participationId)}
+                        className="btn-delete"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
