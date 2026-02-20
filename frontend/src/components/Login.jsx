@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import './Login.css';
+import './AdminLogin.css';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -36,9 +37,13 @@ function Login() {
     }
   };
 
+  const goToUserLogin = () => {
+    navigate('/user/login');
+  };
+
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <div className="login-container admin-login-container">
+      <div className="login-card admin-login-card">
         <div className="login-header">
           <h1>Admin Login</h1>
           <p>Coram Deo Management System</p>
@@ -79,7 +84,7 @@ function Login() {
 
           <button
             type="submit"
-            className="login-button"
+            className="login-button admin-login-button"
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
@@ -88,6 +93,9 @@ function Login() {
 
         <div className="login-footer">
           <p>Don't have an account? Contact your administrator.</p>
+          <p style={{ marginTop: '10px' }}>
+            User? <button onClick={goToUserLogin} className="link-button">Login here</button>
+          </p>
         </div>
       </div>
     </div>
