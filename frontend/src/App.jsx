@@ -13,6 +13,7 @@ import AdminParticipations from './components/AdminParticipations';
 import Books from './components/Books';
 import MoneyTracker from './components/MoneyTracker';
 import ImageGame from './components/ImageGame/ImageGame';
+import SlideshowGame from './components/ImageGame/SlideshowGame';
 import UserProfile from './components/UserProfile';
 import UserParticipation from './components/UserParticipation';
 import PrivateRoute from './components/PrivateRoute';
@@ -92,6 +93,7 @@ function App() {
           }
         />
         <Route path="/image-game" element={<ImageGame />} />
+        <Route path="/slideshow-game" element={<SlideshowGame />} />
         <Route
           path="/admin/participations"
           element={

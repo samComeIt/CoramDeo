@@ -1,0 +1,104 @@
+.slideshow-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.slideshow-progress {
+  align-self: center;
+  background: #f0f2f7;
+  color: #555;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.slideshow-name-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  animation: slideNameIn 0.3s ease-out;
+  pointer-events: none;
+}
+
+.slideshow-name-overlay span {
+  background: rgba(0, 0, 0, 0.68);
+  color: white;
+  font-size: 34px;
+  font-weight: 800;
+  padding: 14px 28px;
+  border-radius: 16px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+  line-height: 1.2;
+}
+
+@keyframes slideNameIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.slideshow-done {
+  background: white;
+  border-radius: 20px;
+  padding: 48px 32px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.slideshow-done h1 {
+  margin: 0 0 12px;
+  font-size: 36px;
+  color: #333;
+}
+
+.slideshow-done p {
+  margin: 0 0 28px;
+  color: #666;
+  font-size: 16px;
+}
+
+@media (min-width: 900px) and (orientation: landscape) {
+  .slideshow-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slideshow-card .question-image-wrapper {
+    max-width: 520px;
+    margin: 0 auto 20px;
+  }
+
+  .slideshow-name-overlay span {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 600px) {
+  .slideshow-name-overlay span {
+    font-size: 26px;
+    padding: 10px 18px;
+  }
+
+  .slideshow-done {
+    padding: 32px 20px;
+  }
+
+  .slideshow-done h1 {
+    font-size: 28px;
+  }
+}
