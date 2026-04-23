@@ -91,6 +91,15 @@ function Dashboard() {
               View All Participations
             </button>
           </div>
+
+          <div className="dashboard-card">
+            <div className="card-icon">💰</div>
+            <h3>Money Tracker</h3>
+            <p>Track income and expenses with payment methods</p>
+            <button className="card-button" onClick={() => navigate('/money-tracker')}>
+              Open Tracker
+            </button>
+          </div>
         </div>
       </div>
     </div>
