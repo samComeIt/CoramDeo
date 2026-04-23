@@ -5,14 +5,13 @@ const TOPIC_ICONS = {
   cartoon: '🎨',
   movie: '🎬',
   real: '🌟',
-  all: '🎯',
 };
 
-const TOPIC_ORDER = [TOPICS.CARTOON, TOPICS.MOVIE, TOPICS.REAL, TOPICS.ALL];
-const ROUND_OPTIONS = [5, 10, 20, 30];
+const TOPIC_ORDER = [TOPICS.CARTOON, TOPICS.MOVIE, TOPICS.REAL];
+const ROUND_OPTIONS = [5, 10];
 
 function TopicSelect({ onStart, defaultRounds = 10 }) {
-  const [selectedTopic, setSelectedTopic] = useState(TOPICS.ALL);
+  const [selectedTopic, setSelectedTopic] = useState(TOPICS.CARTOON);
   const [rounds, setRounds] = useState(defaultRounds);
 
   const poolSize = useMemo(
