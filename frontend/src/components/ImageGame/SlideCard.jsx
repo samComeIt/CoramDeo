@@ -7,6 +7,9 @@ function SlideCard({ slide, index, total, showName, onReveal, onNext, isLast }) 
     setImageError(false);
   }, [slide.id]);
 
+  const src = showName && slide.namedImage ? slide.namedImage : slide.image;
+  const useOverlayFallback = showName && !slide.namedImage;
+
   return (
     <div className="question-card slideshow-card">
       <div className="slideshow-progress">
@@ -18,18 +21,18 @@ function SlideCard({ slide, index, total, showName, onReveal, onNext, isLast }) 
           <div className="image-placeholder">
             <div className="placeholder-icon">🖼️</div>
             <p>이미지 없음</p>
-            <small>{slide.image}</small>
+            <small>{src}</small>
           </div>
         ) : (
           <img
-            key={slide.id}
-            src={slide.image}
+            key={`${slide.id}-${showName ? 'named' : 'plain'}`}
+            src={src}
             alt={showName ? slide.nameKr : '이미지'}
             className="question-image"
             onError={() => setImageError(true)}
           />
         )}
-        {showName && (
+        {useOverlayFallback && (
           <div className="slideshow-name-overlay">
             <span>{slide.nameKr}</span>
           </div>
